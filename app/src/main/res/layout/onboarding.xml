@@ -2,6 +2,6 @@
 
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/onboarding_fragment"
-    android:name="com.glowapps.vidify.IntroFragment"
+    android:name="com.glowapps.vidify.OnboardingFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

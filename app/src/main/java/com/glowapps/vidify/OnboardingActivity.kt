@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 
 
-class IntroActivity : FragmentActivity() {
+class OnboardingActivity : FragmentActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.intro_activity)
+        setContentView(R.layout.onboarding)
     }
 }

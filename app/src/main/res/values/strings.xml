@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Vidify TV</string>
     <string name="main_description">Please open Vidify on a device to start playing videos.</string>
+    <string name="onboarding_title_one">Title One</string>
+    <string name="onboarding_title_two">Title Two</string>
+    <string name="onboarding_title_three">Title Three</string>
+    <string name="onboarding_description_one">Description One</string>
+    <string name="onboarding_description_two">Description Two</string>
+    <string name="onboarding_description_three">Description Three</string>
 </resources>
