@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="intro_titles">
+        <item>Title One</item>
+        <item>Title Two</item>
+        <item>Title Three</item>
+    </string-array>
+    <string-array name="intro_descriptions">
+        <item>Description One</item>
+        <item>Description Two</item>
+        <item>Description Three</item>
+    </string-array>
+</resources>
