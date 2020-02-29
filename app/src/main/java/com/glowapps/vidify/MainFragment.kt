@@ -1,5 +1,6 @@
 package com.glowapps.vidify
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.leanback.app.VerticalGridSupportFragment
@@ -7,9 +8,8 @@ import androidx.leanback.widget.*
 import com.glowapps.vidify.model.Device
 import com.glowapps.vidify.presenter.CardPresenter
 
-// TODO: Set background
 // TODO: Set fragment's description somewhere in the UI
-// TODO: Custom message when there are no views
+// TODO: Custom message when there are no views with instructions on how to set Vidify up
 
 class MainFragment : VerticalGridSupportFragment() {
     companion object {
@@ -51,14 +51,6 @@ class MainFragment : VerticalGridSupportFragment() {
 
         // After 500ms, start the animation to transition the cards into view.
         Handler().postDelayed({ startEntranceTransition() }, 500)
-
-
-        /* TODO: Search not implemented yet
-        setOnSearchClickedListener {
-            val intent = Intent(activity, SearchActivity::class.java)
-            startActivity(intent)
-        }
-        */
 
         onItemViewClickedListener = ItemViewClickedListener()
         setOnItemViewSelectedListener(ItemViewSelectedListener())
