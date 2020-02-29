@@ -1,25 +1,32 @@
 package com.glowapps.vidify
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
 
 
 class MainFragment : VerticalGridSupportFragment() {
     companion object {
-        private const val NUM_COLUMNS = 5
+        private const val NUM_COLUMNS = 4
     }
 
     private lateinit var cardAdapter: ArrayObjectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        title = getString(R.string.app_name)
+
+        // Including the presenter to manage the grid layout itself.
+        val gridPresenter = VerticalGridPresenter()
+        gridPresenter.numberOfColumns = NUM_COLUMNS
+        setGridPresenter(gridPresenter)
 
         // Setting the card adapter, an interface used to manage the cards displayed in the
         // grid view. The cards are set up with a Device structure.
         cardAdapter = ArrayObjectAdapter(CardPresenter())
-        // TODO: Use R.drawable.pic1 as an Int, rather than an example string.
-        val dummyDevice = Device("Name", "description", "https://storage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202012_%20Year%20In%20Review/bg.jpg", "127.0.0.1", 32005)
+        val dummyDevice = Device("Name", "description", R.drawable.pic1, "127.0.0.1", 32005)
+        cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)
@@ -27,18 +34,13 @@ class MainFragment : VerticalGridSupportFragment() {
         cardAdapter.add(dummyDevice)
         adapter = cardAdapter
 
-        title = getString(R.string.app_name)
         if (savedInstanceState == null) {
             prepareEntranceTransition()
         }
-        setupFragment()
-    }
 
-    private fun setupFragment() {
-        // Including the presenter to manage the grid layout itself.
-        val gridPresenter = VerticalGridPresenter()
-        gridPresenter.numberOfColumns = NUM_COLUMNS
-        setGridPresenter(gridPresenter)
+        // After 500ms, start the animation to transition the cards into view.
+        Handler().postDelayed({ startEntranceTransition() }, 500)
+
 
         /* TODO: Search not implemented yet
         setOnSearchClickedListener {
@@ -74,8 +76,10 @@ class MainFragment : VerticalGridSupportFragment() {
     }
 
     private class ItemViewSelectedListener : OnItemViewSelectedListener {
-        override fun onItemSelected(itemViewHolder: Presenter.ViewHolder, item: Any,
-                                    rowViewHolder: RowPresenter.ViewHolder, row: Row) {
+        override fun onItemSelected(
+            itemViewHolder: Presenter.ViewHolder?, item: Any?,
+            rowViewHolder: RowPresenter.ViewHolder?, row: Row?
+        ) {
         }
     }
 }

@@ -20,6 +20,7 @@ class CardPresenter : Presenter() {
     // presenter.
     // The returned ViewHolder describes an item view and metadata about its place.
     override fun onCreateViewHolder(parent: ViewGroup?): ViewHolder {
+        println("Called onCreateViewHolder")
         // The cards will have two colors: the default one, and the selected color. The latter
         // will be set when the user focuses the card, or selects it. They will also have an
         // image.
@@ -44,7 +45,7 @@ class CardPresenter : Presenter() {
 
     // Switching between the default and selected colors.
     private fun updateCardBackgroundColor(view: ImageCardView, selected: Boolean) {
-        println("Changing bg color")
+        println("Changing background color")
         val color = if (selected) mSelectedBackgroundColor else mDefaultBackgroundColor
         // Both background colors should be set because the view's
         // background is temporarily visible during animations.
@@ -55,19 +56,21 @@ class CardPresenter : Presenter() {
     // This is called when a view is recycled inside a RecyclerView. Its attributes are updated
     // to the new Device structure.
     override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
-        println("Called onBindViewHolder for CardPresenter")
-        // The data structure
+        println("Called onBindViewHolder")
+
+        // Obtaining the parameters
         val device: Device = item as Device
-        // The view itself
         val cardView = viewHolder!!.view as ImageCardView
 
-        // Setting the basic attributes
-        cardView.titleText = device.name
-        cardView.contentText = device.description
+        // Setting the card's basic attributes
         val res = cardView.resources
         val width = res.getDimensionPixelSize(R.dimen.card_width)
         val height = res.getDimensionPixelSize(R.dimen.card_height)
         cardView.setMainImageDimensions(width, height)
+        // Its contents: the title and a description
+        cardView.titleText = device.name
+        cardView.contentText = device.description
+        // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)
             .load(device.cardImage)
             .apply(RequestOptions.errorOf(mDefaultCardImage))
