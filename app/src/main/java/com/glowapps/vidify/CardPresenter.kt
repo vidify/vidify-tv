@@ -55,6 +55,7 @@ class CardPresenter : Presenter() {
     // This is called when a view is recycled inside a RecyclerView. Its attributes are updated
     // to the new Device structure.
     override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
+        println("Called onBindViewHolder for CardPresenter")
         // The data structure
         val device: Device = item as Device
         // The view itself

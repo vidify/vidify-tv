@@ -15,15 +15,11 @@ class MainFragment : VerticalGridSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Including the presenter to manage the grid layout itself.
-        val gridPresenter = VerticalGridPresenter()
-        gridPresenter.numberOfColumns = NUM_COLUMNS
-        setGridPresenter(gridPresenter)
-
         // Setting the card adapter, an interface used to manage the cards displayed in the
         // grid view. The cards are set up with a Device structure.
         cardAdapter = ArrayObjectAdapter(CardPresenter())
-        val dummyDevice = Device("Name", "description", getString(R.drawable.pic1), "127.0.0.1", 32005)
+        // TODO: Use R.drawable.pic1 as an Int, rather than an example string.
+        val dummyDevice = Device("Name", "description", "https://storage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202012_%20Year%20In%20Review/bg.jpg", "127.0.0.1", 32005)
         cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)
@@ -39,6 +35,10 @@ class MainFragment : VerticalGridSupportFragment() {
     }
 
     private fun setupFragment() {
+        // Including the presenter to manage the grid layout itself.
+        val gridPresenter = VerticalGridPresenter()
+        gridPresenter.numberOfColumns = NUM_COLUMNS
+        setGridPresenter(gridPresenter)
 
         /* TODO: Search not implemented yet
         setOnSearchClickedListener {
