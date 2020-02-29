@@ -25,6 +25,7 @@
             android:icon="@mipmap/logo"
             android:logo="@mipmap/logo"
             android:label="@string/app_name"
+            android:theme="@style/Theme.Leanback"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
