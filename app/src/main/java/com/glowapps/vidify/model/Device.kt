@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.model
 
 // TODO: move this to a data/ directory. Same for the other files.
 

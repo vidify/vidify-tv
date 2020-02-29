@@ -4,7 +4,12 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
+import com.glowapps.vidify.model.Device
+import com.glowapps.vidify.presenter.CardPresenter
 
+// TODO: Set background
+// TODO: Set fragment's description somewhere in the UI
+// TODO: Custom message when there are no views
 
 class MainFragment : VerticalGridSupportFragment() {
     companion object {
@@ -25,7 +30,13 @@ class MainFragment : VerticalGridSupportFragment() {
         // Setting the card adapter, an interface used to manage the cards displayed in the
         // grid view. The cards are set up with a Device structure.
         cardAdapter = ArrayObjectAdapter(CardPresenter())
-        val dummyDevice = Device("Name", "description", R.drawable.pic1, "127.0.0.1", 32005)
+        val dummyDevice = Device(
+            "Name",
+            "description",
+            R.drawable.pic1,
+            "127.0.0.1",
+            32005
+        )
         cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)
         cardAdapter.add(dummyDevice)

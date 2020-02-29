@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.presenter
 
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -8,6 +8,8 @@ import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.glowapps.vidify.R
+import com.glowapps.vidify.model.Device
 
 
 // The CardPresenter generates card views, given their name and other basic attributes.
@@ -20,14 +22,17 @@ class CardPresenter : Presenter() {
     // presenter.
     // The returned ViewHolder describes an item view and metadata about its place.
     override fun onCreateViewHolder(parent: ViewGroup?): ViewHolder {
-        println("Called onCreateViewHolder")
         // The cards will have two colors: the default one, and the selected color. The latter
         // will be set when the user focuses the card, or selects it. They will also have an
         // image.
         mDefaultBackgroundColor =
-            ContextCompat.getColor(parent!!.context, R.color.default_background)
+            ContextCompat.getColor(parent!!.context,
+                R.color.default_background
+            )
         mSelectedBackgroundColor =
-            ContextCompat.getColor(parent.context, R.color.selected_background)
+            ContextCompat.getColor(parent.context,
+                R.color.selected_background
+            )
         mDefaultCardImage = parent.resources.getDrawable(R.drawable.default_card_image, null)
 
         val cardView: ImageCardView = object : ImageCardView(parent.context) {
@@ -45,7 +50,6 @@ class CardPresenter : Presenter() {
 
     // Switching between the default and selected colors.
     private fun updateCardBackgroundColor(view: ImageCardView, selected: Boolean) {
-        println("Changing background color")
         val color = if (selected) mSelectedBackgroundColor else mDefaultBackgroundColor
         // Both background colors should be set because the view's
         // background is temporarily visible during animations.
@@ -56,8 +60,6 @@ class CardPresenter : Presenter() {
     // This is called when a view is recycled inside a RecyclerView. Its attributes are updated
     // to the new Device structure.
     override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
-        println("Called onBindViewHolder")
-
         // Obtaining the parameters
         val device: Device = item as Device
         val cardView = viewHolder!!.view as ImageCardView
