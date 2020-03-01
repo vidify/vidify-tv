@@ -1,14 +1,18 @@
 package com.glowapps.vidify
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
-
 import com.glowapps.vidify.model.Device
 import com.glowapps.vidify.presenter.CardPresenter
 
@@ -16,11 +20,12 @@ import com.glowapps.vidify.presenter.CardPresenter
 // TODO: Set fragment's description somewhere in the UI
 // TODO: Custom message when there are no views with instructions on how to set Vidify up
 
+const val DEVICE_ARG = "com.glowapps.vidify.DEVICE"
+
 class MainFragment : VerticalGridSupportFragment() {
     companion object {
         const val TAG = "MainFragment"
         const val SERVICE_TYPE = "_http._tcp."
-        // const val SERVICE_TYPE = "_services._dns-sd._udp"
         const val SERVICE_NAME = "Vidify"
         private const val NUM_COLUMNS = 4
     }
@@ -50,17 +55,17 @@ class MainFragment : VerticalGridSupportFragment() {
             prepareEntranceTransition()
         }
         startEntranceTransition()
-
-        // Initializing the callbacks for the items
-        onItemViewClickedListener = ItemViewClickedListener()
-        setOnItemViewSelectedListener(ItemViewSelectedListener())
     }
 
     override fun onStart() {
         // Initializing the network service discovery
         nsdManager = activity!!.getSystemService(Context.NSD_SERVICE) as NsdManager
         initResolveListener()
-        //discoverServices()
+
+        // Initializing the callbacks for the items
+        onItemViewClickedListener = ItemViewClickedListener(activity!!)
+        setOnItemViewSelectedListener(ItemViewSelectedListener())
+
         super.onStart()
     }
 
@@ -75,10 +80,10 @@ class MainFragment : VerticalGridSupportFragment() {
     private fun stopDiscovery() {
         if (discoveryListener != null) {
             try {
-                nsdManager!!.stopServiceDiscovery(discoveryListener);
+                nsdManager!!.stopServiceDiscovery(discoveryListener)
             } finally { }
         }
-        discoveryListener = null;
+        discoveryListener = null
     }
 
     // On pause, the discovery listener will be stopped. Thus, the current devices inside
@@ -97,24 +102,35 @@ class MainFragment : VerticalGridSupportFragment() {
         discoverServices()
     }
 
-    private class ItemViewClickedListener : OnItemViewClickedListener {
+    private class ItemViewClickedListener(activity: FragmentActivity) : OnItemViewClickedListener {
+        private val mActivity: FragmentActivity = activity
+
         // Called when a user clicks on a item, which should be a Device structure.
         override fun onItemClicked(
-            itemViewHolder: Presenter.ViewHolder, item: Any,
-            rowViewHolder: RowPresenter.ViewHolder, row: Row
+            itemViewHolder: Presenter.ViewHolder?, item: Any,
+            rowViewHolder: RowPresenter.ViewHolder?, row: Row?
         ) {
-            Log.d(TAG, "Item $item was clicked")
+            // If it's a device, a new activity is started to communicate with it and show
+            // the videos.
             if (item is Device) {
-                /* TODO: Connecting to the clicked device
-                val device: Device = item as Device
-                NsdServiceInfo service = mNsdHelper.getChosenServiceInfo();
-                if (service != null) {
-                    Log.d(TAG, "Connecting.");
-                    mConnection.connectToServer(service.getHost(), service.getPort());
-                } else {
-                    Log.d(TAG, "No service to connect to!");
-                }
+                Log.i(TAG, "Connecting to device $item");
+
+                /*
+                val videoId = "dQw4w9WgXcQ"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
+                intent.putExtra("force_fullscreen", true)
+                intent.putExtra("finish_on_ended", true)
+                startActivity(mActivity, intent, null)
                  */
+
+                // mConnection.connectToServer(service.getHost(), service.getPort());
+                val intent = Intent(mActivity, VideoPlayerActivity::class.java).apply {
+                    putExtra(VideoPlayerActivity.DEVICE_ARG, item)
+                }
+                val bundle =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity)
+                        .toBundle()
+                startActivity(mActivity, intent, bundle)
             }
         }
     }

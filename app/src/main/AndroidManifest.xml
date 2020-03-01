@@ -43,7 +43,7 @@
                 </activity>
         -->
 
-        <activity android:name="com.glowapps.vidify.OnboardingActivity"
+        <activity android:name="com.glowapps.vidify.VideoPlayerActivity"
             android:enabled="true" />
     </application>
 </manifest>
