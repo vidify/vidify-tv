@@ -115,14 +115,6 @@ class MainFragment : VerticalGridSupportFragment() {
             if (item is Device) {
                 Log.i(TAG, "Connecting to device $item");
 
-                /*
-                val videoId = "dQw4w9WgXcQ"
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
-                intent.putExtra("force_fullscreen", true)
-                intent.putExtra("finish_on_ended", true)
-                startActivity(mActivity, intent, null)
-                 */
-
                 // mConnection.connectToServer(service.getHost(), service.getPort());
                 val intent = Intent(mActivity, VideoPlayerActivity::class.java).apply {
                     putExtra(VideoPlayerActivity.DEVICE_ARG, item)
