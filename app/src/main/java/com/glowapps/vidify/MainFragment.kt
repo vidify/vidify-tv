@@ -1,9 +1,7 @@
 package com.glowapps.vidify
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
@@ -20,13 +18,11 @@ import com.glowapps.vidify.presenter.CardPresenter
 // TODO: Set fragment's description somewhere in the UI
 // TODO: Custom message when there are no views with instructions on how to set Vidify up
 
-const val DEVICE_ARG = "com.glowapps.vidify.DEVICE"
-
 class MainFragment : VerticalGridSupportFragment() {
     companion object {
         const val TAG = "MainFragment"
-        const val SERVICE_TYPE = "_http._tcp."
-        const val SERVICE_NAME = "Vidify"
+        const val SERVICE_TYPE = "_vidify._tcp."
+        const val SERVICE_NAME = "vidify"
         private const val NUM_COLUMNS = 4
     }
 
@@ -115,7 +111,6 @@ class MainFragment : VerticalGridSupportFragment() {
             if (item is Device) {
                 Log.i(TAG, "Connecting to device $item");
 
-                // mConnection.connectToServer(service.getHost(), service.getPort());
                 val intent = Intent(mActivity, VideoPlayerActivity::class.java).apply {
                     putExtra(VideoPlayerActivity.DEVICE_ARG, item)
                 }
@@ -167,14 +162,16 @@ class MainFragment : VerticalGridSupportFragment() {
             }
 
             override fun onServiceFound(service: NsdServiceInfo) {
+                // TODO: handle "java.lang.IllegalArgumentException: listener already in use"
                 Log.d(TAG, "Service discovery success: $service")
-                if (service.serviceType != SERVICE_TYPE) {
-                    Log.d(TAG, "Unknown Service Type: " + service.serviceType)
-                } else if (service.serviceName.contains(SERVICE_NAME)) {
-                    Log.d(TAG, "Resolving service: $SERVICE_NAME")
-                    nsdManager!!.resolveService(service, resolveListener)
-                } else {
-                    Log.d(TAG, "Name didn't match")
+                when {
+                    service.serviceType != SERVICE_TYPE ->
+                        Log.d(TAG, "Unknown Service Type: " + service.serviceType)
+                    service.serviceName.contains(SERVICE_NAME) -> {
+                        Log.d(TAG, "Resolving service: $SERVICE_NAME")
+                        nsdManager!!.resolveService(service, resolveListener)
+                    }
+                    else -> Log.d(TAG, "Name didn't match")
                 }
             }
 

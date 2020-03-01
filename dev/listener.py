@@ -12,7 +12,7 @@ class MyListener:
 
 zeroconf = Zeroconf()
 listener = MyListener()
-browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
+browser = ServiceBrowser(zeroconf, "_vidify._tcp.local.", listener)
 try:
     input("Press enter to exit...\n\n")
 finally:
