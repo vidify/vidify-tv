@@ -6,7 +6,6 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.util.Log
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.VerticalGridSupportFragment
@@ -15,6 +14,10 @@ import com.glowapps.vidify.model.Device
 import com.glowapps.vidify.presenter.CardPresenter
 
 
+// TODO: Modularize MainFragment's NSD part so that it's easier to support other systems:
+//       * Android phone
+//       * Chromecast
+//       * Amazon Fire TV stick
 // TODO: Set fragment's description somewhere in the UI
 // TODO: Custom message when there are no views with instructions on how to set Vidify up
 
@@ -109,15 +112,12 @@ class MainFragment : VerticalGridSupportFragment() {
             // If it's a device, a new activity is started to communicate with it and show
             // the videos.
             if (item is Device) {
-                Log.i(TAG, "Connecting to device $item");
+                Log.i(TAG, "Device clicked: $item");
 
                 val intent = Intent(mActivity, VideoPlayerActivity::class.java).apply {
                     putExtra(VideoPlayerActivity.DEVICE_ARG, item)
                 }
-                val bundle =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(mActivity)
-                        .toBundle()
-                startActivity(mActivity, intent, bundle)
+                startActivity(mActivity, intent, null)
             }
         }
     }
@@ -139,7 +139,7 @@ class MainFragment : VerticalGridSupportFragment() {
             }
 
             override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                Log.i(TAG, "Resolve Succeeded: $serviceInfo")
+                Log.i(TAG, "Resolve succeeded: $serviceInfo")
 
                 // The new device found is added as a card in the grid
                 cardAdapter.add(

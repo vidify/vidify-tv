@@ -12,12 +12,12 @@ import com.glowapps.vidify.model.Device
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import org.json.JSONObject
 import java.io.BufferedReader
-import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
 
+
+// TODO: onPause, onResume and onDestroy
 
 class VideoPlayerActivity : FragmentActivity() {
     companion object {
@@ -26,6 +26,8 @@ class VideoPlayerActivity : FragmentActivity() {
     }
 
     private lateinit var youTubePlayerView: YouTubePlayerView
+    private lateinit var device: Device
+    private lateinit var socket: Socket
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,9 +40,8 @@ class VideoPlayerActivity : FragmentActivity() {
 
         // First connecting to the device
         Thread {
-            val device = intent.getParcelableExtra<Device>(DEVICE_ARG)!!
+            device = intent.getParcelableExtra(DEVICE_ARG)!!
             Log.i(TAG, "Connecting to the device in a new thread: ${device.serviceInfo}")
-            val socket: Socket
             try {
                 socket = Socket(device.serviceInfo.host, device.serviceInfo.port)
             } catch (t: Throwable) {
@@ -48,12 +49,16 @@ class VideoPlayerActivity : FragmentActivity() {
                 t.printStackTrace()
                 return@Thread
             }
-            val sockInput = BufferedReader(InputStreamReader(socket.getInputStream()))
-            var json: JSONObject
+
+            val sockInput = BufferedReader(InputStreamReader(socket.inputStream))
+            // var json: JSONObject
             while (!socket.isClosed) {
-                json = JSONObject(sockInput.readLine())
-                Log.i(TAG, "Received $json")
+                // json = JSONObject(sockInput.nextLine())
+                // Log.i(TAG, "Received $json")
+                val line: String = sockInput.readLine()
+                Log.i(TAG, "READ: $line")
             }
+            Log.i(TAG,"Stop receiving messages, socket is closed")
         }.start()
 
         // Initializing the YouTube player and inserting it into the layout
@@ -64,6 +69,21 @@ class VideoPlayerActivity : FragmentActivity() {
         lifecycle.addObserver(youTubePlayerView)
         youTubePlayerView.enterFullScreen()
         youTubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // TODO: Synchronization with the connection thread, otherwise
+        //  a `java.net.SocketException: Socket closed` is raised
+        /*
+        try {
+            socket.close()
+        } catch (e: IOException) {
+            Log.e(TAG, "Error when trying to close the socket")
+            e.printStackTrace()
+        }
+         */
     }
 
     private val youTubePlayerListener =  object : AbstractYouTubePlayerListener() {

@@ -27,7 +27,8 @@
             android:logo="@mipmap/logo"
             android:label="@string/app_name"
             android:theme="@style/Theme.Leanback"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -45,6 +46,7 @@
         -->
 
         <activity android:name="com.glowapps.vidify.VideoPlayerActivity"
-            android:enabled="true" />
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 </manifest>
