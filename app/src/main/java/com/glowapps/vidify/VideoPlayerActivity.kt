@@ -3,14 +3,17 @@ package com.glowapps.vidify
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.JsonReader
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
 import com.glowapps.vidify.model.Device
+import com.glowapps.vidify.model.Message
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -28,6 +31,7 @@ class VideoPlayerActivity : FragmentActivity() {
     private lateinit var youTubePlayerView: YouTubePlayerView
     private lateinit var device: Device
     private lateinit var socket: Socket
+    private var curVideo: String? = null
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,13 +54,17 @@ class VideoPlayerActivity : FragmentActivity() {
                 return@Thread
             }
 
-            val sockInput = BufferedReader(InputStreamReader(socket.inputStream))
-            // var json: JSONObject
+            val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
             while (!socket.isClosed) {
-                // json = JSONObject(sockInput.nextLine())
-                // Log.i(TAG, "Received $json")
-                val line: String = sockInput.readLine()
-                Log.i(TAG, "READ: $line")
+                val msg = readMessage(jsonInput)
+                if (msg.url != curVideo) {
+                    // Start new video
+                    startVideo(msg)
+                    curVideo = msg.url
+                } else {
+                    // Update current video
+                }
+                Log.i(TAG, "READ: $msg")
             }
             Log.i(TAG,"Stop receiving messages, socket is closed")
         }.start()
@@ -64,11 +72,74 @@ class VideoPlayerActivity : FragmentActivity() {
         // Initializing the YouTube player and inserting it into the layout
         Log.i(TAG, "Creating YouTube player")
         val mainLayout = findViewById<LinearLayout>(R.id.youtube_layout)
+        // Configuring the player
         youTubePlayerView = YouTubePlayerView(this)
+        youTubePlayerView.enableAutomaticInitialization = false
         mainLayout.addView(youTubePlayerView)
         lifecycle.addObserver(youTubePlayerView)
         youTubePlayerView.enterFullScreen()
-        youTubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
+        youTubePlayerView.getPlayerUiController()
+            .showBufferingProgress(false)
+            .showCurrentTime(false)
+            .showDuration(false)
+            .showMenuButton(false)
+            .enableLiveVideoUi(false)
+            .showSeekBar(false)
+            .showPlayPauseButton(false)
+            .showVideoTitle(false)
+            .showYouTubeButton(false)
+            .showFullscreenButton(false)
+        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                youTubePlayer.mute()
+            }
+        })
+    }
+
+    fun readMessage(input: JsonReader): Message {
+        var url: String? = null
+        var absolutePos: Int? = null
+        var relativePos: Int? = null
+        var isPlaying: Boolean? = null
+
+        input.beginObject()
+        while (input.hasNext()) {
+            when (val name = input.nextName()) {
+                "url" -> url = input.nextString()
+                "absolute_position" -> absolutePos = input.nextInt()
+                "relative_position" -> relativePos = input.nextInt()
+                "is_playing" -> isPlaying = input.nextBoolean()
+                else -> {
+                    Log.e(TAG, "Unexpected parameter in JSON message: $name")
+                    input.skipValue()
+                }
+            }
+        }
+        input.endObject()
+
+        return Message(url, absolutePos, relativePos, isPlaying)
+    }
+
+    fun startVideo(msg: Message) {
+        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                var url: String
+                var position: Float
+                if (msg.url == null) {
+                    // msg.url = R.drawable.default_video
+                    url = "fx2Z5ZD_Rbo"  // nothing
+                } else {
+                    url = msg.url!!.split("watch?v=")[1]
+                    Log.d(TAG, "${msg.url!!.split("watch?v=")}")
+                }
+                if (msg.absolutePos == null) {
+                    position = 0F
+                } else {
+                    position = msg.absolutePos!! / 1000F
+                }
+                youTubePlayer.loadVideo(url, position)
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -84,13 +155,5 @@ class VideoPlayerActivity : FragmentActivity() {
             e.printStackTrace()
         }
          */
-    }
-
-    private val youTubePlayerListener =  object : AbstractYouTubePlayerListener() {
-        override fun onReady(youTubePlayer: YouTubePlayer) {
-            youTubePlayer.mute()
-            val videoId = "dQw4w9WgXcQ"
-            youTubePlayer.loadVideo(videoId, 0f)
-        }
     }
 }
