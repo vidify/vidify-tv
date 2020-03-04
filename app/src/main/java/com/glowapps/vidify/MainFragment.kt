@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
-import com.glowapps.vidify.model.Device
 import com.glowapps.vidify.presenter.CardPresenter
 
 
@@ -45,7 +44,7 @@ class MainFragment : VerticalGridSupportFragment() {
         setGridPresenter(gridPresenter)
 
         // Setting the card adapter, an interface used to manage the cards displayed in the
-        // grid view. The cards are set up with a Device structure.
+        // grid view.
         cardAdapter = ArrayObjectAdapter(CardPresenter())
         adapter = cardAdapter
 
@@ -104,14 +103,13 @@ class MainFragment : VerticalGridSupportFragment() {
     private class ItemViewClickedListener(activity: FragmentActivity) : OnItemViewClickedListener {
         private val mActivity: FragmentActivity = activity
 
-        // Called when a user clicks on a item, which should be a Device structure.
         override fun onItemClicked(
             itemViewHolder: Presenter.ViewHolder?, item: Any,
             rowViewHolder: RowPresenter.ViewHolder?, row: Row?
         ) {
             // If it's a device, a new activity is started to communicate with it and show
             // the videos.
-            if (item is Device) {
+            if (item is NsdServiceInfo) {
                 Log.i(TAG, "Device clicked: $item");
 
                 val intent = Intent(mActivity, VideoPlayerActivity::class.java).apply {
@@ -142,14 +140,7 @@ class MainFragment : VerticalGridSupportFragment() {
                 Log.i(TAG, "Resolve succeeded: $serviceInfo")
 
                 // The new device found is added as a card in the grid
-                cardAdapter.add(
-                    Device(
-                        serviceInfo.serviceName,
-                        serviceInfo.serviceType,
-                        R.drawable.pic3,
-                        serviceInfo
-                    )
-                )
+                cardAdapter.add(serviceInfo)
             }
         }
     }
@@ -177,13 +168,11 @@ class MainFragment : VerticalGridSupportFragment() {
 
             // When a service is lost, every widget in the adapter has to be checked to remove it
             // from the GUI too.
-            override fun onServiceLost(service: NsdServiceInfo) {
+            override fun onServiceLost(lost: NsdServiceInfo) {
                 Log.e(TAG, "Service lost: $service")
 
-                var device: Device
                 for (i in 0 until cardAdapter.size()) {
-                    device = cardAdapter[i] as Device
-                    if (device.serviceInfo.serviceName == service.serviceName) {
+                    if ((cardAdapter[i] as NsdServiceInfo).serviceName == lost.serviceName) {
                         Log.i(TAG, "Removed item from cardAdapter with index $i")
                         cardAdapter.removeItems(i, 1)
                         break

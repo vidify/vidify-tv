@@ -1,6 +1,7 @@
 package com.glowapps.vidify.presenter
 
 import android.graphics.drawable.Drawable
+import android.net.nsd.NsdServiceInfo
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -9,14 +10,13 @@ import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.glowapps.vidify.R
-import com.glowapps.vidify.model.Device
 
 
 // The CardPresenter generates card views, given their name and other basic attributes.
 class CardPresenter : Presenter() {
     private var mSelectedBackgroundColor = -1
-    private var mDefaultBackgroundColor = -1
-    private lateinit var mDefaultCardImage: Drawable
+    private var defaultBackgroundColor = -1
+    private lateinit var defaultCardImage: Drawable
 
     // The parent ViewGroup contains various views that are going to be created within the
     // presenter.
@@ -25,7 +25,7 @@ class CardPresenter : Presenter() {
         // The cards will have two colors: the default one, and the selected color. The latter
         // will be set when the user focuses the card, or selects it. They will also have an
         // image.
-        mDefaultBackgroundColor =
+        defaultBackgroundColor =
             ContextCompat.getColor(parent!!.context,
                 R.color.default_background
             )
@@ -33,7 +33,7 @@ class CardPresenter : Presenter() {
             ContextCompat.getColor(parent.context,
                 R.color.selected_background
             )
-        mDefaultCardImage = parent.resources.getDrawable(R.drawable.default_card_image, null)
+        defaultCardImage = parent.resources.getDrawable(R.drawable.os_unknown, null)
 
         val cardView: ImageCardView = object : ImageCardView(parent.context) {
             override fun setSelected(selected: Boolean) {
@@ -50,32 +50,43 @@ class CardPresenter : Presenter() {
 
     // Switching between the default and selected colors.
     private fun updateCardBackgroundColor(view: ImageCardView, selected: Boolean) {
-        val color = if (selected) mSelectedBackgroundColor else mDefaultBackgroundColor
+        val color = if (selected) mSelectedBackgroundColor else defaultBackgroundColor
         // Both background colors should be set because the view's
         // background is temporarily visible during animations.
         view.setBackgroundColor(color)
         view.findViewById<View>(R.id.info_field).setBackgroundColor(color)
     }
 
-    // This is called when a view is recycled inside a RecyclerView. Its attributes are updated
-    // to the new Device structure.
+    // This is called when a view is recycled inside a RecyclerView.
     override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
-        // Obtaining the parameters
-        val device: Device = item as Device
-        val cardView = viewHolder!!.view as ImageCardView
-
         // Setting the card's basic attributes
-        val res = cardView.resources
-        val width = res.getDimensionPixelSize(R.dimen.card_width)
-        val height = res.getDimensionPixelSize(R.dimen.card_height)
+        val cardView = viewHolder!!.view as ImageCardView
+        val width = cardView.resources.getDimensionPixelSize(R.dimen.card_width)
+        val height = cardView.resources.getDimensionPixelSize(R.dimen.card_height)
         cardView.setMainImageDimensions(width, height)
-        // Its contents: the title and a description
-        cardView.titleText = device.name
-        cardView.contentText = device.description
+
+        // Setting the card's contents: title, description and image
+        val device: NsdServiceInfo = item as NsdServiceInfo
+        cardView.titleText = device.serviceName
+        // By default, the description is the API. If it isn't found, the OS name
+        // is used.
+        if (device.attributes.containsKey("api")) {
+            cardView.contentText = device.attributes["api"]!!.toString(Charsets.UTF_8)
+        } else if (device.attributes.containsKey("os")) {
+            cardView.contentText = device.attributes["os"]!!.toString(Charsets.UTF_8)
+        }
+        // The image is obtained with the OS attribute. The possible 
+        val image: Int = when (device.attributes["os"]?.toString(Charsets.UTF_8)?.toUpperCase()) {
+            "LINUX" -> R.drawable.os_linux
+            "MACOS" -> R.drawable.os_macos
+            "WINDOWS" -> R.drawable.os_windows
+            "BSD" -> R.drawable.os_bsd
+            else -> R.drawable.os_unknown
+        }
         // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)
-            .load(device.cardImage)
-            .apply(RequestOptions.errorOf(mDefaultCardImage))
+            .load(image)
+            .apply(RequestOptions.errorOf(defaultCardImage))
             .into(cardView.mainImageView)
     }
 
