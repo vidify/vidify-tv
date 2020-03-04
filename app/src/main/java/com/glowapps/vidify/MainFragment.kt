@@ -169,7 +169,7 @@ class MainFragment : VerticalGridSupportFragment() {
             // When a service is lost, every widget in the adapter has to be checked to remove it
             // from the GUI too.
             override fun onServiceLost(lost: NsdServiceInfo) {
-                Log.e(TAG, "Service lost: $service")
+                Log.e(TAG, "Service lost: $lost")
 
                 for (i in 0 until cardAdapter.size()) {
                     if ((cardAdapter[i] as NsdServiceInfo).serviceName == lost.serviceName) {

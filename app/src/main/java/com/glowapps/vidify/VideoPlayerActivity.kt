@@ -2,6 +2,7 @@ package com.glowapps.vidify
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.util.JsonReader
 import android.util.Log
@@ -9,13 +10,10 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
-import com.glowapps.vidify.model.Device
 import com.glowapps.vidify.model.Message
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.Socket
 
@@ -29,7 +27,7 @@ class VideoPlayerActivity : FragmentActivity() {
     }
 
     private lateinit var youTubePlayerView: YouTubePlayerView
-    private lateinit var device: Device
+    private lateinit var device: NsdServiceInfo
     private lateinit var socket: Socket
     private var curVideo: String? = null
 
@@ -41,33 +39,6 @@ class VideoPlayerActivity : FragmentActivity() {
         this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(R.layout.video_player_activity)
-
-        // First connecting to the device
-        Thread {
-            device = intent.getParcelableExtra(DEVICE_ARG)!!
-            Log.i(TAG, "Connecting to the device in a new thread: ${device.serviceInfo}")
-            try {
-                socket = Socket(device.serviceInfo.host, device.serviceInfo.port)
-            } catch (t: Throwable) {
-                Log.e(TAG, "Failed to connect to socket: $t")
-                t.printStackTrace()
-                return@Thread
-            }
-
-            val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
-            while (!socket.isClosed) {
-                val msg = readMessage(jsonInput)
-                if (msg.url != curVideo) {
-                    // Start new video
-                    startVideo(msg)
-                    curVideo = msg.url
-                } else {
-                    // Update current video
-                }
-                Log.i(TAG, "READ: $msg")
-            }
-            Log.i(TAG,"Stop receiving messages, socket is closed")
-        }.start()
 
         // Initializing the YouTube player and inserting it into the layout
         Log.i(TAG, "Creating YouTube player")
@@ -94,9 +65,36 @@ class VideoPlayerActivity : FragmentActivity() {
                 youTubePlayer.mute()
             }
         })
+
+        // First connecting to the device
+        Thread {
+            device = intent.getParcelableExtra(DEVICE_ARG)!!
+            Log.i(TAG, "Connecting to the device in a new thread: $device")
+            try {
+                socket = Socket(device.host, device.port)
+            } catch (t: Throwable) {
+                Log.e(TAG, "Failed to connect to socket: $t")
+                t.printStackTrace()
+                return@Thread
+            }
+
+            val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
+            while (!socket.isClosed) {
+                val msg = readMessage(jsonInput)
+                if (msg.url != curVideo) {
+                    // Start new video
+                    startVideo(msg)
+                    curVideo = msg.url
+                } else {
+                    // Update current video
+                }
+                Log.i(TAG, "READ: $msg")
+            }
+            Log.i(TAG,"Stop receiving messages, socket is closed")
+        }.start()
     }
 
-    fun readMessage(input: JsonReader): Message {
+    private fun readMessage(input: JsonReader): Message {
         var url: String? = null
         var absolutePos: Int? = null
         var relativePos: Int? = null
@@ -120,22 +118,19 @@ class VideoPlayerActivity : FragmentActivity() {
         return Message(url, absolutePos, relativePos, isPlaying)
     }
 
-    fun startVideo(msg: Message) {
+    private fun startVideo(msg: Message) {
         youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                var url: String
-                var position: Float
-                if (msg.url == null) {
+                val url = if (msg.url == null) {
                     // msg.url = R.drawable.default_video
-                    url = "fx2Z5ZD_Rbo"  // nothing
+                    "fx2Z5ZD_Rbo"  // nothing
                 } else {
-                    url = msg.url!!.split("watch?v=")[1]
-                    Log.d(TAG, "${msg.url!!.split("watch?v=")}")
+                    msg.url!!.split("watch?v=")[1]
                 }
-                if (msg.absolutePos == null) {
-                    position = 0F
+                val position = if (msg.absolutePos == null) {
+                    0F
                 } else {
-                    position = msg.absolutePos!! / 1000F
+                    msg.absolutePos!! / 1000F
                 }
                 youTubePlayer.loadVideo(url, position)
             }
