@@ -13,7 +13,9 @@ import androidx.fragment.app.FragmentActivity
 import com.glowapps.vidify.model.Message
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
 
@@ -26,10 +28,9 @@ class VideoPlayerActivity : FragmentActivity() {
         const val DEVICE_ARG = "device"
     }
 
-    private lateinit var youTubePlayerView: YouTubePlayerView
     private lateinit var device: NsdServiceInfo
-    private lateinit var socket: Socket
-    private var curVideo: String? = null
+    private lateinit var youTubePlayerView: YouTubePlayerView
+    private lateinit var listenerThread: Thread
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +41,11 @@ class VideoPlayerActivity : FragmentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(R.layout.video_player_activity)
 
+        device = intent.getParcelableExtra(DEVICE_ARG)!!
+
         // Initializing the YouTube player and inserting it into the layout
         Log.i(TAG, "Creating YouTube player")
         val mainLayout = findViewById<LinearLayout>(R.id.youtube_layout)
-        // Configuring the player
         youTubePlayerView = YouTubePlayerView(this)
         youTubePlayerView.enableAutomaticInitialization = false
         mainLayout.addView(youTubePlayerView)
@@ -66,59 +68,28 @@ class VideoPlayerActivity : FragmentActivity() {
             }
         })
 
-        // First connecting to the device
-        Thread {
-            device = intent.getParcelableExtra(DEVICE_ARG)!!
-            Log.i(TAG, "Connecting to the device in a new thread: $device")
-            try {
-                socket = Socket(device.host, device.port)
-            } catch (t: Throwable) {
-                Log.e(TAG, "Failed to connect to socket: $t")
-                t.printStackTrace()
-                return@Thread
-            }
-
-            val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
-            while (!socket.isClosed) {
-                val msg = readMessage(jsonInput)
-                if (msg.url != curVideo) {
-                    // Start new video
-                    startVideo(msg)
-                    curVideo = msg.url
-                } else {
-                    // Update current video
-                }
-                Log.i(TAG, "READ: $msg")
-            }
-            Log.i(TAG,"Stop receiving messages, socket is closed")
-        }.start()
+        // Starting the thread that communicates with the server
+        listenerThread = Thread(Listener())
+        listenerThread .start()
     }
 
-    private fun readMessage(input: JsonReader): Message {
-        var url: String? = null
-        var absolutePos: Int? = null
-        var relativePos: Int? = null
-        var isPlaying: Boolean? = null
+    override fun onDestroy() {
+        Log.d(TAG, "Destroyed")
+        listenerThread.interrupt()
 
-        input.beginObject()
-        while (input.hasNext()) {
-            when (val name = input.nextName()) {
-                "url" -> url = input.nextString()
-                "absolute_position" -> absolutePos = input.nextInt()
-                "relative_position" -> relativePos = input.nextInt()
-                "is_playing" -> isPlaying = input.nextBoolean()
-                else -> {
-                    Log.e(TAG, "Unexpected parameter in JSON message: $name")
-                    input.skipValue()
-                }
-            }
-        }
-        input.endObject()
-
-        return Message(url, absolutePos, relativePos, isPlaying)
+        super.onDestroy()
     }
 
-    private fun startVideo(msg: Message) {
+    override fun onPause() {
+        Log.d(TAG, "Paused")
+        listenerThread.interrupt()
+
+        super.onPause()
+    }
+
+    // Start playing a new video from the message's url, and with its attributes
+    @Synchronized
+    fun startVideo(msg: Message) {
         youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 val url = if (msg.url == null) {
@@ -130,25 +101,106 @@ class VideoPlayerActivity : FragmentActivity() {
                 val position = if (msg.absolutePos == null) {
                     0F
                 } else {
-                    msg.absolutePos!! / 1000F
+                    msg.absolutePos!!.toFloat() / 1000F
                 }
                 youTubePlayer.loadVideo(url, position)
+                if (msg.isPlaying != null && !msg.isPlaying!!) {
+                    youTubePlayer.pause()
+                }
             }
         })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    // Update the currently playing video with the message's attributes
+    @Synchronized
+    fun updateVideo(msg: Message) {
+        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                // The absolute position has priority over the relative.
+                if (msg.absolutePos != null) {
+                    youTubePlayer.seekTo(msg.absolutePos!!.toFloat() / 1000F)
+                } else if (msg.relativePos != null) {
+                    val tracker = YouTubePlayerTracker()
+                    youTubePlayer.addListener(tracker)
+                    youTubePlayer.seekTo(tracker.currentSecond + msg.relativePos!!.toFloat() / 1000F)
+                    youTubePlayer.removeListener(tracker)
+                }
+                if (msg.isPlaying != null) {
+                    if (msg.isPlaying!!) {
+                        youTubePlayer.play()
+                    } else {
+                        youTubePlayer.pause()
+                    }
+                }
+            }
+        })
+    }
 
-        // TODO: Synchronization with the connection thread, otherwise
-        //  a `java.net.SocketException: Socket closed` is raised
-        /*
-        try {
-            socket.close()
-        } catch (e: IOException) {
-            Log.e(TAG, "Error when trying to close the socket")
-            e.printStackTrace()
+    private inner class Listener : Runnable {
+        private lateinit var socket: Socket
+        private var curVideo: String? = null
+
+        override fun run() {
+            // First connecting to the device
+            Log.i(TAG, "Connecting to the device in the Listener thread: $device")
+            try {
+                socket = Socket(device.host, device.port)
+            } catch (t: Throwable) {
+                Log.e(TAG, "Failed to connect to socket: $t")
+                t.printStackTrace()
+                return
+            }
+
+            val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
+            jsonInput.isLenient = true  // More tolerable JSON parser
+            while (!socket.isClosed  && !Thread.currentThread().isInterrupted) {
+                // Obtaining the message and parsing it. If the received URL is the same as the
+                // one currently playing, the video is updated. Otherwise, a new one starts
+                // playing with its properties.
+                val msg = readMessage(jsonInput)
+                if (msg.url == curVideo) {
+                    updateVideo(msg)
+                } else {
+                    startVideo(msg)
+                    curVideo = msg.url
+                }
+            }
+            disconnect()
+            Log.i(TAG, "Stopped listening for messages")
         }
-         */
+
+        private fun readMessage(input: JsonReader): Message {
+            Log.i(TAG, "Parsing a message")
+            var url: String? = null
+            var absolutePos: Int? = null
+            var relativePos: Int? = null
+            var isPlaying: Boolean? = null
+
+            input.beginObject()
+            while (input.hasNext()) {
+                when (val name = input.nextName()) {
+                    "url" -> url = input.nextString()
+                    "absolute_pos" -> absolutePos = input.nextInt()
+                    "relative_pos" -> relativePos = input.nextInt()
+                    "is_playing" -> isPlaying = input.nextBoolean()
+                    else -> {
+                        Log.e(TAG, "Unexpected parameter in JSON message: $name")
+                        input.skipValue()
+                    }
+                }
+            }
+            input.endObject()
+
+            return Message(url, absolutePos, relativePos, isPlaying)
+        }
+
+        fun disconnect() {
+            try {
+                socket.close()
+            } catch (e: IOException) {
+                Log.e(TAG, "Error when trying to close the socket")
+                e.printStackTrace()
+            }
+        }
     }
 }
