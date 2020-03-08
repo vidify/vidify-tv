@@ -32,7 +32,6 @@ class MainFragment : VerticalGridSupportFragment() {
 
     private var nsdManager: NsdManager? = null
     private var discoveryListener: NsdManager.DiscoveryListener? = null
-    private var resolveListener: NsdManager.ResolveListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +57,6 @@ class MainFragment : VerticalGridSupportFragment() {
     override fun onStart() {
         // Initializing the network service discovery
         nsdManager = activity!!.getSystemService(Context.NSD_SERVICE) as NsdManager
-        initResolveListener()
 
         // Initializing the callbacks for the items
         onItemViewClickedListener = ItemViewClickedListener(activity!!)
@@ -128,22 +126,6 @@ class MainFragment : VerticalGridSupportFragment() {
         }
     }
 
-    private fun initResolveListener() {
-        Log.i(TAG, "Initializing the resolve listener")
-        resolveListener = object : NsdManager.ResolveListener {
-            override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-                Log.e(TAG, "Resolve failed: $errorCode")
-            }
-
-            override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                Log.i(TAG, "Resolve succeeded: $serviceInfo")
-
-                // The new device found is added as a card in the grid
-                cardAdapter.add(serviceInfo)
-            }
-        }
-    }
-
     private fun initDiscoveryListener() {
         Log.i(TAG, "Initializing the discovery listener")
         discoveryListener = object : NsdManager.DiscoveryListener {
@@ -152,14 +134,13 @@ class MainFragment : VerticalGridSupportFragment() {
             }
 
             override fun onServiceFound(service: NsdServiceInfo) {
-                // TODO: handle "java.lang.IllegalArgumentException: listener already in use"
                 Log.d(TAG, "Service discovery success: $service")
                 when {
                     service.serviceType != SERVICE_TYPE ->
                         Log.d(TAG, "Unknown Service Type: " + service.serviceType)
                     service.serviceName.contains(SERVICE_NAME) -> {
                         Log.d(TAG, "Resolving service: $SERVICE_NAME")
-                        nsdManager!!.resolveService(service, resolveListener)
+                        nsdManager!!.resolveService(service, CustomResolveListener())
                     }
                     else -> Log.d(TAG, "Name didn't match")
                 }
@@ -198,4 +179,18 @@ class MainFragment : VerticalGridSupportFragment() {
             }
         }
     }
+
+    private inner class CustomResolveListener : NsdManager.ResolveListener {
+        override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+            Log.e(TAG, "Resolve failed: $errorCode")
+        }
+
+        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+            Log.i(TAG, "Resolve succeeded: $serviceInfo")
+
+            // The new device found is added as a card in the grid
+            cardAdapter.add(serviceInfo)
+        }
+    }
+
 }
