@@ -100,8 +100,7 @@ class MainFragment : VerticalGridSupportFragment() {
         discoverServices()
     }
 
-    private class ItemViewClickedListener(activity: FragmentActivity) : OnItemViewClickedListener {
-        private val mActivity: FragmentActivity = activity
+    private class ItemViewClickedListener(private val activity: FragmentActivity) : OnItemViewClickedListener {
 
         override fun onItemClicked(
             itemViewHolder: Presenter.ViewHolder?, item: Any,
@@ -112,10 +111,10 @@ class MainFragment : VerticalGridSupportFragment() {
             if (item is NsdServiceInfo) {
                 Log.i(TAG, "Device clicked: $item");
 
-                val intent = Intent(mActivity, VideoPlayerActivity::class.java).apply {
+                val intent = Intent(activity, VideoPlayerActivity::class.java).apply {
                     putExtra(VideoPlayerActivity.DEVICE_ARG, item)
                 }
-                startActivity(mActivity, intent, null)
+                startActivity(activity, intent, null)
             }
         }
     }

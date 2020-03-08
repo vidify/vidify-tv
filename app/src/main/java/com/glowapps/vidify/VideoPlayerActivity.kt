@@ -8,10 +8,10 @@ import android.util.JsonReader
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
-import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
 import com.glowapps.vidify.model.Message
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
@@ -45,28 +45,18 @@ class VideoPlayerActivity : FragmentActivity() {
 
         // Initializing the YouTube player and inserting it into the layout
         Log.i(TAG, "Creating YouTube player")
-        val mainLayout = findViewById<LinearLayout>(R.id.youtube_layout)
-        youTubePlayerView = YouTubePlayerView(this)
-        youTubePlayerView.enableAutomaticInitialization = false
-        mainLayout.addView(youTubePlayerView)
+        youTubePlayerView = findViewById(R.id.youtube_player_view)
         lifecycle.addObserver(youTubePlayerView)
-        youTubePlayerView.enterFullScreen()
-        youTubePlayerView.getPlayerUiController()
-            .showBufferingProgress(false)
-            .showCurrentTime(false)
-            .showDuration(false)
-            .showMenuButton(false)
-            .enableLiveVideoUi(false)
-            .showSeekBar(false)
-            .showPlayPauseButton(false)
-            .showVideoTitle(false)
-            .showYouTubeButton(false)
-            .showFullscreenButton(false)
+        // The custom player UI is as restricted and minimal as possible, since the user won't have
+        // any control over what's playing.
         youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.mute()
+                youTubePlayerView.inflateCustomPlayerUi(R.layout.custom_youtube_player)
+                youTubePlayer.addListener(object : AbstractYouTubePlayerListener() {})
             }
         })
+        youTubePlayerView.enterFullScreen()
+        muteVideo()
 
         // Starting the thread that communicates with the server
         listenerThread = Thread(Listener())
@@ -103,8 +93,10 @@ class VideoPlayerActivity : FragmentActivity() {
                 } else {
                     msg.absolutePos!!.toFloat() / 1000F
                 }
+                Log.i(TAG, "Playing video with ID $url at $position seconds")
                 youTubePlayer.loadVideo(url, position)
                 if (msg.isPlaying != null && !msg.isPlaying!!) {
+                    Log.i(TAG, "Video starts paused")
                     youTubePlayer.pause()
                 }
             }
@@ -132,6 +124,24 @@ class VideoPlayerActivity : FragmentActivity() {
                         youTubePlayer.pause()
                     }
                 }
+            }
+        })
+    }
+
+    @Synchronized
+    fun muteVideo() {
+        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                youTubePlayer.mute()
+            }
+        })
+    }
+
+    @Synchronized
+    fun unMuteVideo() {
+        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                youTubePlayer.unMute()
             }
         })
     }
