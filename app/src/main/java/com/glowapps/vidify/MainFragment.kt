@@ -13,10 +13,7 @@ import androidx.leanback.widget.*
 import com.glowapps.vidify.presenter.CardPresenter
 
 
-// TODO: Modularize MainFragment's NSD part so that it's easier to support other systems:
-//       * Android phone
-//       * Chromecast
-//       * Amazon Fire TV stick
+// TODO: Modularize MainFragment's NSD part so that it's easier to support Chromecast
 // TODO: Set fragment's description somewhere in the UI
 // TODO: Custom message when there are no views with instructions on how to set Vidify up
 

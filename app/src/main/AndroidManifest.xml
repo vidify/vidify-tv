@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.glowapps.vidify"
+    android:installLocation="preferExternal"
     tools:ignore="MissingLeanbackLauncher">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -22,7 +23,7 @@
         android:label="@string/app_name">
 
         <activity
-            android:name="com.glowapps.vidify.MainActivity"
+            android:name=".MainActivity"
             android:icon="@mipmap/logo"
             android:logo="@mipmap/logo"
             android:label="@string/app_name"
@@ -31,21 +32,12 @@
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- MAIN MOBILE ACTIVITY (NOT IMPLEMENTED)
-                <activity android:name=".mobile.MobileWelcomeActivity">
-                    <intent-filter>
-                        <action android:name="android.intent.action.MAIN" />
-
-                        <category android:name="android.intent.category.LAUNCHER" />
-                    </intent-filter>
-                </activity>
-        -->
-
-        <activity android:name="com.glowapps.vidify.VideoPlayerActivity"
+        <activity android:name=".VideoPlayerActivity"
             android:screenOrientation="landscape"
             tools:ignore="LockedOrientationActivity" />
     </application>

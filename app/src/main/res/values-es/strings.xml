@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vidify TV</string>
+    <string name="main_description">Por favor abre Vidify en un dispositivo en el mismo WiFi para reproducir vídeos.</string>
+</resources>
