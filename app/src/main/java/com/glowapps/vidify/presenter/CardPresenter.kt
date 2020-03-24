@@ -10,6 +10,7 @@ import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.glowapps.vidify.R
+import java.util.*
 
 
 // The CardPresenter generates card views, given their name and other basic attributes.
@@ -26,11 +27,13 @@ class CardPresenter : Presenter() {
         // will be set when the user focuses the card, or selects it. They will also have an
         // image.
         defaultBackgroundColor =
-            ContextCompat.getColor(parent!!.context,
+            ContextCompat.getColor(
+                parent!!.context,
                 R.color.default_background
             )
         mSelectedBackgroundColor =
-            ContextCompat.getColor(parent.context,
+            ContextCompat.getColor(
+                parent.context,
                 R.color.selected_background
             )
         defaultCardImage = parent.resources.getDrawable(R.drawable.os_unknown, null)
@@ -68,21 +71,24 @@ class CardPresenter : Presenter() {
         // Setting the card's contents: title, description and image
         val device: NsdServiceInfo = item as NsdServiceInfo
         cardView.titleText = device.serviceName
-        // By default, the description is the API. If it isn't found, the OS name
-        // is used.
-        if (device.attributes.containsKey("api")) {
-            cardView.contentText = device.attributes["api"]!!.toString(Charsets.UTF_8)
-        } else if (device.attributes.containsKey("os")) {
-            cardView.contentText = device.attributes["os"]!!.toString(Charsets.UTF_8)
+
+        // By default, the description is the API. If it isn't found, the OS name is used.
+        cardView.contentText = when {
+            device.attributes.containsKey("api") -> device.attributes["api"]!!.toString(Charsets.UTF_8)
+            device.attributes.containsKey("os") -> device.attributes["os"]!!.toString(Charsets.UTF_8)
+            else -> "Unknown device"
         }
-        // The image is obtained with the OS attribute. The possible 
-        val image: Int = when (device.attributes["os"]?.toString(Charsets.UTF_8)?.toUpperCase()) {
-            "LINUX" -> R.drawable.os_linux
-            "MACOS" -> R.drawable.os_macos
-            "WINDOWS" -> R.drawable.os_windows
-            "BSD" -> R.drawable.os_bsd
-            else -> R.drawable.os_unknown
-        }
+
+        // The image is obtained with the OS attribute.
+        val image: Int =
+            when (device.attributes["os"]?.toString(Charsets.UTF_8)?.toUpperCase(Locale.ROOT)) {
+                "LINUX" -> R.drawable.os_linux
+                "MACOS" -> R.drawable.os_macos
+                "WINDOWS" -> R.drawable.os_windows
+                "BSD" -> R.drawable.os_bsd
+                else -> R.drawable.os_unknown
+            }
+
         // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)
             .load(image)

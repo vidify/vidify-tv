@@ -13,10 +13,6 @@ import androidx.leanback.widget.*
 import com.glowapps.vidify.presenter.CardPresenter
 
 
-// TODO: Modularize MainFragment's NSD part so that it's easier to support Chromecast
-// TODO: Set fragment's description somewhere in the UI
-// TODO: Custom message when there are no views with instructions on how to set Vidify up
-
 class MainFragment : VerticalGridSupportFragment() {
     companion object {
         const val TAG = "MainFragment"
@@ -32,6 +28,7 @@ class MainFragment : VerticalGridSupportFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Setting fullscreen and loading the activity layout to play the videos
         title = getString(R.string.app_name)
 
         // Including the presenter to manage the grid layout itself.

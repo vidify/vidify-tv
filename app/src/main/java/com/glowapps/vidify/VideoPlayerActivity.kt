@@ -20,8 +20,6 @@ import java.io.InputStreamReader
 import java.net.Socket
 
 
-// TODO: onPause, onResume and onDestroy
-
 class VideoPlayerActivity : FragmentActivity() {
     companion object {
         const val TAG = "VideoPlayerActivity"
@@ -37,7 +35,10 @@ class VideoPlayerActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         // Setting fullscreen and loading the activity layout to play the videos
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(R.layout.video_player_activity)
 
@@ -49,7 +50,7 @@ class VideoPlayerActivity : FragmentActivity() {
         lifecycle.addObserver(youTubePlayerView)
         // The custom player UI is as restricted and minimal as possible, since the user won't have
         // any control over what's playing.
-        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 youTubePlayerView.inflateCustomPlayerUi(R.layout.custom_youtube_player)
                 youTubePlayer.addListener(object : AbstractYouTubePlayerListener() {})
@@ -60,7 +61,7 @@ class VideoPlayerActivity : FragmentActivity() {
 
         // Starting the thread that communicates with the server
         listenerThread = Thread(Listener())
-        listenerThread .start()
+        listenerThread.start()
     }
 
     override fun onDestroy() {
@@ -80,7 +81,7 @@ class VideoPlayerActivity : FragmentActivity() {
     // Start playing a new video from the message's url, and with its attributes
     @Synchronized
     fun startVideo(msg: Message) {
-        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 val url = if (msg.url == null) {
                     // msg.url = R.drawable.default_video
@@ -106,7 +107,7 @@ class VideoPlayerActivity : FragmentActivity() {
     // Update the currently playing video with the message's attributes
     @Synchronized
     fun updateVideo(msg: Message) {
-        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 // The absolute position has priority over the relative.
                 if (msg.absolutePos != null) {
@@ -130,7 +131,7 @@ class VideoPlayerActivity : FragmentActivity() {
 
     @Synchronized
     fun muteVideo() {
-        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.mute()
             }
@@ -139,7 +140,7 @@ class VideoPlayerActivity : FragmentActivity() {
 
     @Synchronized
     fun unMuteVideo() {
-        youTubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback {
+        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.unMute()
             }
@@ -163,7 +164,7 @@ class VideoPlayerActivity : FragmentActivity() {
 
             val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
             jsonInput.isLenient = true  // More tolerable JSON parser
-            while (!socket.isClosed  && !Thread.currentThread().isInterrupted) {
+            while (!socket.isClosed && !Thread.currentThread().isInterrupted) {
                 // Obtaining the message and parsing it. If the received URL is the same as the
                 // one currently playing, the video is updated. Otherwise, a new one starts
                 // playing with its properties.
