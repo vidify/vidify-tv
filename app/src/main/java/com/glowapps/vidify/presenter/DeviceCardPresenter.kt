@@ -58,9 +58,9 @@ class DeviceCardPresenter : Presenter() {
     }
 
     // This is called when a view is recycled inside a RecyclerView.
-    override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
+    override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         // Setting the card's basic attributes
-        val cardView = viewHolder!!.view as ImageCardView
+        val cardView = viewHolder.view as ImageCardView
         val width = cardView.resources.getDimensionPixelSize(R.dimen.default_card_width)
         val height = cardView.resources.getDimensionPixelSize(R.dimen.default_card_height)
         cardView.setMainImageDimensions(width, height)

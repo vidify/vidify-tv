@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import com.glowapps.vidify.model.MiscCard
+import com.glowapps.vidify.nsd.DeviceDiscoveryListener
 import com.glowapps.vidify.presenter.DeviceCardPresenter
 import com.glowapps.vidify.presenter.MiscCardPresenter
 
@@ -22,6 +23,7 @@ class MainFragment : BrowseSupportFragment() {
         const val TAG = "MainFragment"
         const val SERVICE_TYPE = "_vidify._tcp."
         const val SERVICE_NAME = "vidify"
+        const val SERVICE_PROTOCOL = NsdManager.PROTOCOL_DNS_SD  // DNS-based service discovery
     }
 
     // Bigger adapter to hold all rows
@@ -31,7 +33,7 @@ class MainFragment : BrowseSupportFragment() {
     // Row with other cards, like settings, disabling ads, help...
     private lateinit var miscAdapter: ArrayObjectAdapter
     private var nsdManager: NsdManager? = null
-    private var discoveryListener: NsdManager.DiscoveryListener? = null
+    private var discoveryListener: DeviceDiscoveryListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,19 +85,17 @@ class MainFragment : BrowseSupportFragment() {
         super.onStart()
     }
 
-    private fun discoverServices() {
+    private fun startDiscovery() {
         Log.i(TAG, "Looking for available devices")
-        initDiscoveryListener()
+        discoveryListener = DeviceDiscoveryListener(nsdManager!!, ::addService, ::removeService)
         nsdManager!!.discoverServices(
-            SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener
+            SERVICE_TYPE, SERVICE_PROTOCOL, discoveryListener
         )
     }
 
     private fun stopDiscovery() {
         if (discoveryListener != null) {
-            try {
-                nsdManager!!.stopServiceDiscovery(discoveryListener)
-            } finally { }
+            nsdManager!!.stopServiceDiscovery(discoveryListener)
         }
         discoveryListener = null
     }
@@ -113,24 +113,27 @@ class MainFragment : BrowseSupportFragment() {
     override fun onResume() {
         Log.d(TAG, "Resuming.")
         super.onResume()
-        discoverServices()
+        startDiscovery()
     }
 
-    private class ItemViewClickedListener(private val activity: FragmentActivity) : OnItemViewClickedListener {
+    private class ItemViewClickedListener(private val activity: FragmentActivity) :
+        OnItemViewClickedListener {
 
         override fun onItemClicked(
             itemViewHolder: Presenter.ViewHolder?, item: Any,
             rowViewHolder: RowPresenter.ViewHolder?, row: Row?
         ) {
-            // If it's a device, a new activity is started to communicate with it and show
-            // the videos.
             if (item is NsdServiceInfo) {
+                // If it's a device, a new activity is started to communicate with it and show
+                // the videos.
                 Log.i(TAG, "Device clicked: $item");
 
                 val intent = Intent(activity, VideoPlayerActivity::class.java).apply {
                     putExtra(VideoPlayerActivity.DEVICE_ARG, item)
                 }
                 startActivity(activity, intent, null)
+            } else if (item is MiscCard) {
+                Log.i(TAG, "Miscellaneous card clicked: $item")
             }
         }
     }
@@ -144,73 +147,23 @@ class MainFragment : BrowseSupportFragment() {
         }
     }
 
-    private fun initDiscoveryListener() {
-        Log.i(TAG, "Initializing the discovery listener")
-        discoveryListener = object : NsdManager.DiscoveryListener {
-            override fun onDiscoveryStarted(regType: String) {
-                Log.d(TAG, "Service discovery started")
-            }
-
-            override fun onServiceFound(service: NsdServiceInfo) {
-                Log.d(TAG, "Service discovery success: $service")
-                when {
-                    service.serviceType != SERVICE_TYPE ->
-                        Log.d(TAG, "Unknown Service Type: " + service.serviceType)
-                    service.serviceName.contains(SERVICE_NAME) -> {
-                        Log.d(TAG, "Resolving service: $SERVICE_NAME")
-                        nsdManager!!.resolveService(service, CustomResolveListener())
-                    }
-                    else -> Log.d(TAG, "Name didn't match")
-                }
-            }
-
-            // When a service is lost, every widget in the adapter has to be checked to remove it
-            // from the GUI too.
-            override fun onServiceLost(lost: NsdServiceInfo) {
-                Log.e(TAG, "Service lost: $lost")
-
-                for (i in 0 until deviceAdapter.size()) {
-                    if ((deviceAdapter[i] as NsdServiceInfo).serviceName == lost.serviceName) {
-                        Log.i(TAG, "Removed item from deviceAdapter with index $i")
-                        deviceAdapter.removeItems(i, 1)
-                        break
-                    }
-                }
-            }
-
-            override fun onDiscoveryStopped(serviceType: String) {
-                Log.i(TAG, "Discovery stopped: $serviceType")
-            }
-
-            override fun onStartDiscoveryFailed(
-                serviceType: String,
-                errorCode: Int
-            ) {
-                Log.e(TAG, "onStartDiscoveryFailed: $serviceType. Error code: $errorCode")
-            }
-
-            override fun onStopDiscoveryFailed(
-                serviceType: String,
-                errorCode: Int
-            ) {
-                Log.e(TAG, "onStopDiscoveryFailed: $serviceType. Error code: $errorCode")
-            }
+    private fun addService(service: NsdServiceInfo) {
+        // The new device found is added as a card in the grid. The UI can
+        // only be modified within the main thread.
+        Handler(Looper.getMainLooper()).post {
+            // code goes here
+            deviceAdapter.add(service)
         }
     }
 
-    private inner class CustomResolveListener : NsdManager.ResolveListener {
-        override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-            Log.e(TAG, "Resolve failed: $errorCode")
-        }
-
-        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-            Log.i(TAG, "Resolve succeeded: $serviceInfo")
-
-            // The new device found is added as a card in the grid. The UI can only be modified
-            // within the main thread.
-            Handler(Looper.getMainLooper()).post {
-                // code goes here
-                deviceAdapter.add(serviceInfo)
+    // When a service is lost, every widget in the adapter has to be checked to remove it
+    // from the GUI too.
+    private fun removeService(service: NsdServiceInfo) {
+        for (i in 0 until deviceAdapter.size()) {
+            if ((deviceAdapter[i] as NsdServiceInfo).serviceName == service.serviceName) {
+                Log.i(MainFragment.TAG, "Removed item from deviceAdapter with index $i")
+                deviceAdapter.removeItems(i, 1)
+                break
             }
         }
     }

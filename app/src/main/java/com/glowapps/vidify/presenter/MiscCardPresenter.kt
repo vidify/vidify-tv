@@ -1,9 +1,7 @@
 package com.glowapps.vidify.presenter
 
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.graphics.drawable.Drawable
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -35,10 +33,9 @@ class MiscCardPresenter : Presenter() {
         return ViewHolder(imageCardView)
     }
 
-    // TODO: viewHolder not null, item too.
-    override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
-        val cardView = viewHolder!!.view as ImageCardView
-        val card = item!! as MiscCard
+    override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
+        val cardView = viewHolder.view as ImageCardView
+        val card = item as MiscCard
 
         cardView.titleText = card.title
         cardView.contentText = card.description
