@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
+import com.glowapps.vidify.model.MiscAction
 import com.glowapps.vidify.model.MiscCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
 import com.glowapps.vidify.presenter.DeviceCardPresenter
@@ -74,7 +75,10 @@ class MainFragment : BrowseSupportFragment() {
 
         // The second row contains other cards for settings and such
         miscAdapter = ArrayObjectAdapter(MiscCardPresenter())
-        miscAdapter.add(MiscCard("Help", null, R.drawable.help_icon))
+        miscAdapter.add(MiscCard("Help", R.drawable.help_icon, MiscAction.HELP))
+        miscAdapter.add(MiscCard("Remove Ads", R.drawable.remove_ads_icon, MiscAction.REMOVE_ADS))
+        miscAdapter.add(MiscCard("Share", R.drawable.share_icon, MiscAction.SHARE))
+        miscAdapter.add(MiscCard("Website", R.drawable.website_icon, MiscAction.WEBSITE))
         rowsAdapter.add(ListRow(HeaderItem(0, "More"), miscAdapter))
     }
 

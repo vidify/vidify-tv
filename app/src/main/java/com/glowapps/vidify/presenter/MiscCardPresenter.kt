@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
@@ -19,7 +20,9 @@ class MiscCardPresenter : Presenter() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?): ViewHolder {
-        val imageCardView = ImageCardView(parent!!.context, R.style.IconCardTheme)
+        // Creating a new card view with the icon theme
+        val wrapper = ContextThemeWrapper(parent!!.context, R.style.IconCardTheme)
+        val imageCardView = ImageCardView(wrapper)
         imageCardView.isFocusable = true
         imageCardView.isFocusableInTouchMode = true
         imageCardView.mainImageView.setBackgroundResource(R.drawable.icon_focused)
@@ -36,9 +39,7 @@ class MiscCardPresenter : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         val cardView = viewHolder.view as ImageCardView
         val card = item as MiscCard
-
         cardView.titleText = card.title
-        cardView.contentText = card.description
 
         // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)
