@@ -5,56 +5,80 @@ import android.content.Intent
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
-import androidx.leanback.app.VerticalGridSupportFragment
+import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
-import com.glowapps.vidify.presenter.CardPresenter
+import com.glowapps.vidify.model.MiscCard
+import com.glowapps.vidify.presenter.DeviceCardPresenter
+import com.glowapps.vidify.presenter.MiscCardPresenter
 
 
-class MainFragment : VerticalGridSupportFragment() {
+class MainFragment : BrowseSupportFragment() {
     companion object {
         const val TAG = "MainFragment"
         const val SERVICE_TYPE = "_vidify._tcp."
         const val SERVICE_NAME = "vidify"
-        private const val NUM_COLUMNS = 4
     }
 
-    private lateinit var cardAdapter: ArrayObjectAdapter
-
+    // Bigger adapter to hold all rows
+    private lateinit var rowsAdapter: ArrayObjectAdapter
+    // Row adapter for the devices in the network
+    private lateinit var deviceAdapter: ArrayObjectAdapter
+    // Row with other cards, like settings, disabling ads, help...
+    private lateinit var miscAdapter: ArrayObjectAdapter
     private var nsdManager: NsdManager? = null
     private var discoveryListener: NsdManager.DiscoveryListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Setting fullscreen and loading the activity layout to play the videos
         title = getString(R.string.app_name)
 
-        // Including the presenter to manage the grid layout itself.
-        val gridPresenter = VerticalGridPresenter()
-        gridPresenter.numberOfColumns = NUM_COLUMNS
-        setGridPresenter(gridPresenter)
+        // The column to the left is enabled, and pressing back will return to it.
+        headersState = HEADERS_ENABLED
+        isHeadersTransitionOnBackEnabled = true
 
-        // Setting the card adapter, an interface used to manage the cards displayed in the
-        // grid view.
-        cardAdapter = ArrayObjectAdapter(CardPresenter())
-        adapter = cardAdapter
+        // Initializing the callbacks for the items
+        onItemViewClickedListener = ItemViewClickedListener(activity!!)
+        onItemViewSelectedListener = ItemViewSelectedListener()
 
         // Loading the grid state, trying to reuse the previous one
         if (savedInstanceState == null) {
             prepareEntranceTransition()
         }
-        startEntranceTransition()
+
+        // Setting the card adapter, an interface used to manage the cards displayed in the
+        // grid view.
+        Handler().postDelayed({
+            createRows()
+            startEntranceTransition()
+        }, 500)
+    }
+
+    private fun createRows() {
+        // The bigger adapter for the header + cards
+        rowsAdapter = ArrayObjectAdapter(ListRowPresenter().apply {
+            // By default, no shadows for the rows (needed for the misc cards)
+            shadowEnabled = false
+        })
+        adapter = rowsAdapter
+
+        // The first row contains the devices in the network, with a header named "Devices".
+        deviceAdapter = ArrayObjectAdapter(DeviceCardPresenter())
+        rowsAdapter.add(ListRow(HeaderItem(0, "Devices"), deviceAdapter))
+
+        // The second row contains other cards for settings and such
+        miscAdapter = ArrayObjectAdapter(MiscCardPresenter())
+        miscAdapter.add(MiscCard("Help", null, R.drawable.help_icon))
+        rowsAdapter.add(ListRow(HeaderItem(0, "More"), miscAdapter))
     }
 
     override fun onStart() {
         // Initializing the network service discovery
         nsdManager = activity!!.getSystemService(Context.NSD_SERVICE) as NsdManager
-
-        // Initializing the callbacks for the items
-        onItemViewClickedListener = ItemViewClickedListener(activity!!)
-        setOnItemViewSelectedListener(ItemViewSelectedListener())
 
         super.onStart()
     }
@@ -77,12 +101,12 @@ class MainFragment : VerticalGridSupportFragment() {
     }
 
     // On pause, the discovery listener will be stopped. Thus, the current devices inside
-    // cardAdapter will be outdated by the time onResume() is called, and they will have to be
+    // deviceAdapter will be outdated by the time onResume() is called, and they will have to be
     // cleared out.
     override fun onPause() {
         Log.d(TAG, "Pausing.")
         stopDiscovery()
-        cardAdapter.clear()
+        deviceAdapter.clear()
         super.onPause()
     }
 
@@ -145,10 +169,10 @@ class MainFragment : VerticalGridSupportFragment() {
             override fun onServiceLost(lost: NsdServiceInfo) {
                 Log.e(TAG, "Service lost: $lost")
 
-                for (i in 0 until cardAdapter.size()) {
-                    if ((cardAdapter[i] as NsdServiceInfo).serviceName == lost.serviceName) {
-                        Log.i(TAG, "Removed item from cardAdapter with index $i")
-                        cardAdapter.removeItems(i, 1)
+                for (i in 0 until deviceAdapter.size()) {
+                    if ((deviceAdapter[i] as NsdServiceInfo).serviceName == lost.serviceName) {
+                        Log.i(TAG, "Removed item from deviceAdapter with index $i")
+                        deviceAdapter.removeItems(i, 1)
                         break
                     }
                 }
@@ -182,9 +206,12 @@ class MainFragment : VerticalGridSupportFragment() {
         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
             Log.i(TAG, "Resolve succeeded: $serviceInfo")
 
-            // The new device found is added as a card in the grid
-            cardAdapter.add(serviceInfo)
+            // The new device found is added as a card in the grid. The UI can only be modified
+            // within the main thread.
+            Handler(Looper.getMainLooper()).post {
+                // code goes here
+                deviceAdapter.add(serviceInfo)
+            }
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package com.glowapps.vidify.presenter
 
-import android.graphics.drawable.Drawable
 import android.net.nsd.NsdServiceInfo
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +13,9 @@ import java.util.*
 
 
 // The CardPresenter generates card views, given their name and other basic attributes.
-class CardPresenter : Presenter() {
+class DeviceCardPresenter : Presenter() {
     private var mSelectedBackgroundColor = -1
     private var defaultBackgroundColor = -1
-    private lateinit var defaultCardImage: Drawable
 
     // The parent ViewGroup contains various views that are going to be created within the
     // presenter.
@@ -36,7 +34,6 @@ class CardPresenter : Presenter() {
                 parent.context,
                 R.color.selected_background
             )
-        defaultCardImage = parent.resources.getDrawable(R.drawable.os_unknown, null)
 
         val cardView: ImageCardView = object : ImageCardView(parent.context) {
             override fun setSelected(selected: Boolean) {
@@ -64,8 +61,8 @@ class CardPresenter : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
         // Setting the card's basic attributes
         val cardView = viewHolder!!.view as ImageCardView
-        val width = cardView.resources.getDimensionPixelSize(R.dimen.card_width)
-        val height = cardView.resources.getDimensionPixelSize(R.dimen.card_height)
+        val width = cardView.resources.getDimensionPixelSize(R.dimen.default_card_width)
+        val height = cardView.resources.getDimensionPixelSize(R.dimen.default_card_height)
         cardView.setMainImageDimensions(width, height)
 
         // Setting the card's contents: title, description and image
@@ -92,7 +89,7 @@ class CardPresenter : Presenter() {
         // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)
             .load(image)
-            .apply(RequestOptions.errorOf(defaultCardImage))
+            .apply(RequestOptions.errorOf(R.drawable.os_unknown))
             .into(cardView.mainImageView)
     }
 

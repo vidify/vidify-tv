@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="card_width">156dp</dimen>
-    <dimen name="card_height">88dp</dimen>
+    <dimen name="default_card_width">156dp</dimen>
+    <dimen name="default_card_height">88dp</dimen>
+
+    <dimen name="icon_card_width">224dp</dimen>
+    <dimen name="icon_card_height">109dp</dimen>
 </resources>
