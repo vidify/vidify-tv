@@ -1,14 +1,9 @@
 package com.glowapps.vidify
 
-import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.util.JsonReader
 import android.util.Log
-import android.view.Window
-import android.view.WindowManager
-import androidx.fragment.app.FragmentActivity
 import com.glowapps.vidify.model.Message
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -20,27 +15,19 @@ import java.io.InputStreamReader
 import java.net.Socket
 
 
-class VideoPlayerActivity : FragmentActivity() {
+class VideoPlayerActivity : TVActivity() {
     companion object {
         const val TAG = "VideoPlayerActivity"
-        const val DEVICE_ARG = "device"
+        const val DEVICE_ARG = "device_arg"
     }
 
     private lateinit var device: NsdServiceInfo
     private lateinit var youTubePlayerView: YouTubePlayerView
     private lateinit var listenerThread: Thread
 
-    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Setting fullscreen and loading the activity layout to play the videos
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        );
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        setContentView(R.layout.video_player_activity)
+        setContentView(R.layout.video_player_fragment)
 
         device = intent.getParcelableExtra(DEVICE_ARG)!!
 

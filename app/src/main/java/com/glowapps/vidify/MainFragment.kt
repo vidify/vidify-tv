@@ -1,7 +1,10 @@
 package com.glowapps.vidify
 
+import android.app.UiModeManager
 import android.content.Context
+import android.content.Context.UI_MODE_SERVICE
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
@@ -12,12 +15,12 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
+import com.glowapps.vidify.misc.DetailViewActivity
 import com.glowapps.vidify.model.MiscAction
 import com.glowapps.vidify.model.MiscCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
 import com.glowapps.vidify.presenter.DeviceCardPresenter
 import com.glowapps.vidify.presenter.MiscCardPresenter
-
 
 class MainFragment : BrowseSupportFragment() {
     companion object {
@@ -71,15 +74,32 @@ class MainFragment : BrowseSupportFragment() {
 
         // The first row contains the devices in the network, with a header named "Devices".
         deviceAdapter = ArrayObjectAdapter(DeviceCardPresenter())
-        rowsAdapter.add(ListRow(HeaderItem(0, "Devices"), deviceAdapter))
+        rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.devices_header)), deviceAdapter))
 
         // The second row contains other cards for settings and such
         miscAdapter = ArrayObjectAdapter(MiscCardPresenter())
-        miscAdapter.add(MiscCard("Help", R.drawable.help_icon, MiscAction.HELP))
-        miscAdapter.add(MiscCard("Remove Ads", R.drawable.remove_ads_icon, MiscAction.REMOVE_ADS))
-        miscAdapter.add(MiscCard("Share", R.drawable.share_icon, MiscAction.SHARE))
-        miscAdapter.add(MiscCard("Website", R.drawable.website_icon, MiscAction.WEBSITE))
-        rowsAdapter.add(ListRow(HeaderItem(0, "More"), miscAdapter))
+        miscAdapter.add(
+            MiscCard(
+                getString(R.string.help_card_title),
+                R.drawable.help_icon,
+                MiscAction.HELP
+            )
+        )
+        miscAdapter.add(
+            MiscCard(
+                getString(R.string.remove_ads_card_title),
+                R.drawable.remove_ads_icon,
+                MiscAction.REMOVE_ADS
+            )
+        )
+        miscAdapter.add(
+            MiscCard(
+                getString(R.string.share_card_title),
+                R.drawable.share_icon,
+                MiscAction.SHARE
+            )
+        )
+        rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.more_header)), miscAdapter))
     }
 
     override fun onStart() {
@@ -138,6 +158,82 @@ class MainFragment : BrowseSupportFragment() {
                 startActivity(activity, intent, null)
             } else if (item is MiscCard) {
                 Log.i(TAG, "Miscellaneous card clicked: $item")
+
+                // Performing the action depending on the card data
+                val intent: Intent? = when (item.action) {
+                    MiscAction.HELP -> {
+                        Intent(activity, DetailViewActivity::class.java).apply {
+                            putExtra(
+                                DetailViewActivity.TITLE_ARG,
+                                activity.getString(R.string.help_title)
+                            )
+                            putExtra(
+                                DetailViewActivity.DESCRIPTION_ARG,
+                                activity.getString(R.string.help_descr)
+                            )
+                            putExtra(
+                                DetailViewActivity.IMAGE_ARG,
+                                R.drawable.help_icon
+                            )
+                        }
+                    }
+                    MiscAction.REMOVE_ADS -> {
+                        Intent(activity, DetailViewActivity::class.java).apply {
+                            putExtra(
+                                DetailViewActivity.TITLE_ARG,
+                                activity.getString(R.string.remove_ads_title)
+                            )
+                            putExtra(
+                                DetailViewActivity.DESCRIPTION_ARG,
+                                activity.getString(R.string.remove_ads_descr)
+                            )
+                            putExtra(
+                                DetailViewActivity.IMAGE_ARG,
+                                R.drawable.remove_ads_icon
+                            )
+                        }
+                    }
+                    MiscAction.SHARE -> {
+                        // Sharing on a television will open an activity with a QR code and more
+                        // details. On Android, the standard share menu will be shown.
+                        val uiModeManager =
+                            activity.getSystemService(UI_MODE_SERVICE) as UiModeManager
+                        if (uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION) {
+                            // Android TV
+                            Intent(activity, DetailViewActivity::class.java).apply {
+                                putExtra(
+                                    DetailViewActivity.TITLE_ARG,
+                                    activity.getString(R.string.share_title)
+                                )
+                                putExtra(
+                                    DetailViewActivity.DESCRIPTION_ARG,
+                                    activity.getString(R.string.share_descr)
+                                )
+                                putExtra(
+                                    DetailViewActivity.IMAGE_ARG,
+                                    R.drawable.share_icon
+                                )
+                            }
+                        } else {
+                            // Mobile / Tablet
+                            Intent(Intent.ACTION_SEND).apply {
+                                putExtra(
+                                    Intent.EXTRA_SUBJECT,
+                                    activity.getString(R.string.app_name)
+                                )
+                                putExtra(
+                                    Intent.EXTRA_TEXT,
+                                    activity.getString(R.string.playstore_link)
+                                )
+                                type = "text/plain"
+                            }
+                        }
+                    }
+                }
+
+                if (intent != null) {
+                    startActivity(activity, intent, null)
+                }
             }
         }
     }

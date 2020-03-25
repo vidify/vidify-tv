@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Vidify TV</string>
+    <string name="playstore_link" translatable="false">https://play.google.com/store/apps/details?id=com.glowapps.vidify</string>
     <string name="main_description">Please open Vidify on a device to start playing videos.</string>
+    <string name="help_card_title">Help</string>
+    <string name="help_title">How to use Vidify TV</string>
+    <string name="help_descr">test help descr</string>
+    <string name="remove_ads_card_title">Remove ads</string>
+    <string name="remove_ads_title">Remove ads</string>
+    <string name="remove_ads_descr">test remove_ads descr</string>
+    <string name="share_card_title">Share</string>
+    <string name="share_title">Share</string>
+    <string name="share_descr">test share descr</string>
+    <string name="devices_header">Devices</string>
+    <string name="more_header">More</string>
 </resources>
