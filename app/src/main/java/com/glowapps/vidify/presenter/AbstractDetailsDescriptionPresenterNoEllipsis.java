@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import androidx.leanback.widget.Presenter;
 
-// Quick fix so that AbstractDetailsDescriptionPresenter doesn't use text ellipsis for the body
+// Custom AbstractDetailsDescriptionPresenter so that it doesn't apply text ellipsis to the body
 // description. See https://stackoverflow.com/q/55304143 for more.
 public abstract class AbstractDetailsDescriptionPresenterNoEllipsis extends Presenter {
     public static class ViewHolder extends Presenter.ViewHolder {

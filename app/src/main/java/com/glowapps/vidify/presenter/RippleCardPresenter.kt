@@ -16,7 +16,7 @@ import com.glowapps.vidify.model.DetailsSection
 // Custom card presenter with a ripple effect, rather than the conventional style.
 class RippleCardPresenter : Presenter() {
     companion object {
-        private const val TAG = "MiscCardPresenter"
+        private const val TAG = "RippleCardPresenter"
         private const val ANIMATION_DURATION = 200
     }
 
@@ -40,7 +40,7 @@ class RippleCardPresenter : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         val cardView = viewHolder.view as ImageCardView
         val card = item as DetailsSection
-        Log.i(TAG, "refreshing card view for: $card")
+        Log.i(TAG, "refreshing card view for: ${card.title}")
         cardView.titleText = card.title
 
         // Adding the image with Glide so that it will be cached.

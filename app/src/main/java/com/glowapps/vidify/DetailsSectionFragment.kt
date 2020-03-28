@@ -9,6 +9,7 @@ import androidx.leanback.app.DetailsSupportFragmentBackgroundController
 import androidx.leanback.widget.*
 import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.presenter.DetailsSectionDescriptionPresenter
+import com.glowapps.vidify.util.getBackground
 
 class DetailsSectionFragment : DetailsSupportFragment() {
     companion object {
@@ -36,7 +37,9 @@ class DetailsSectionFragment : DetailsSupportFragment() {
         // Setting the background
         backgroundController = DetailsSupportFragmentBackgroundController(this).apply {
             enableParallax()
-            coverBitmap = BitmapFactory.decodeResource(resources, R.drawable.bg)
+            val options = BitmapFactory.Options()
+            options.inScaled = false
+            coverBitmap = BitmapFactory.decodeResource(resources, getBackground(activity!!), options)
         }
 
         // Setting the elements given the DetailsSection data

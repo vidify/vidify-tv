@@ -22,6 +22,7 @@ import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
 import com.glowapps.vidify.presenter.RippleCardPresenter
 import com.glowapps.vidify.presenter.DefaultCardPresenter
+import com.glowapps.vidify.util.isTV
 
 class MainFragment : BrowseSupportFragment() {
     companion object {
@@ -38,7 +39,7 @@ class MainFragment : BrowseSupportFragment() {
     private lateinit var deviceAdapter: ArrayObjectAdapter
 
     // Row with other cards, like settings, disabling ads, help...
-    private lateinit var miscAdapter: ArrayObjectAdapter
+    private lateinit var sectionAdapter: ArrayObjectAdapter
     private var nsdManager: NsdManager? = null
     private var discoveryListener: DeviceDiscoveryListener? = null
 
@@ -59,6 +60,8 @@ class MainFragment : BrowseSupportFragment() {
             prepareEntranceTransition()
         }
 
+        initAdapters()
+
         // Setting the card adapter, an interface used to manage the cards displayed in the
         // grid view.
         Handler().postDelayed({
@@ -67,7 +70,7 @@ class MainFragment : BrowseSupportFragment() {
         }, 500)
     }
 
-    private fun createRows() {
+    private fun initAdapters() {
         // The bigger adapter for the header + cards
         rowsAdapter = ArrayObjectAdapter(ListRowPresenter().apply {
             // By default, no shadows for the rows (needed for the misc cards)
@@ -77,11 +80,14 @@ class MainFragment : BrowseSupportFragment() {
 
         // The first row contains the devices in the network, with a header named "Devices".
         deviceAdapter = ArrayObjectAdapter(DefaultCardPresenter())
+        // The second row contains other cards for settings and such
+        sectionAdapter = ArrayObjectAdapter(RippleCardPresenter())
+    }
+
+    private fun createRows() {
         rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.devices_header)), deviceAdapter))
 
-        // The second row contains other cards for settings and such
-        miscAdapter = ArrayObjectAdapter(RippleCardPresenter())
-        miscAdapter.add(
+        sectionAdapter.add(
             DetailsSection(
                 DetailsSectionCard.HELP,
                 getString(R.string.section_help_title),
@@ -92,7 +98,7 @@ class MainFragment : BrowseSupportFragment() {
                 null
             )
         )
-        miscAdapter.add(
+        sectionAdapter.add(
             DetailsSection(
                 DetailsSectionCard.REMOVE_ADS,
                 getString(R.string.section_remove_ads_title),
@@ -108,7 +114,7 @@ class MainFragment : BrowseSupportFragment() {
                 )
             )
         )
-        miscAdapter.add(
+        sectionAdapter.add(
             DetailsSection(
                 DetailsSectionCard.SHARE,
                 getString(R.string.section_share_title),
@@ -119,7 +125,7 @@ class MainFragment : BrowseSupportFragment() {
                 null
             )
         )
-        rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.more_header)), miscAdapter))
+        rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.more_header)), sectionAdapter))
     }
 
     override fun onStart() {
@@ -148,15 +154,17 @@ class MainFragment : BrowseSupportFragment() {
     // deviceAdapter will be outdated by the time onResume() is called, and they will have to be
     // cleared out.
     override fun onPause() {
-        Log.d(TAG, "Pausing.")
+        Log.d(TAG, "Pausing fragment")
         stopDiscovery()
         deviceAdapter.clear()
+
         super.onPause()
     }
 
     override fun onResume() {
-        Log.d(TAG, "Resuming.")
         super.onResume()
+
+        Log.d(TAG, "Resuming fragment")
         startDiscovery()
     }
 
@@ -179,12 +187,9 @@ class MainFragment : BrowseSupportFragment() {
             } else if (item is DetailsSection) {
                 Log.i(TAG, "Section card clicked: $item")
 
-                val uiModeManager = activity.getSystemService(UI_MODE_SERVICE) as UiModeManager
                 // Performing the action depending on the card data
                 val intent: Intent =
-                    if (item.type == DetailsSectionCard.SHARE
-                        && uiModeManager.currentModeType != Configuration.UI_MODE_TYPE_TELEVISION
-                    ) {
+                    if (item.type == DetailsSectionCard.SHARE && !isTV(activity)) {
                         // Sharing on a television will open an activity with a QR code and more
                         // details. On Android, the standard share menu will be shown.
                         Intent(Intent.ACTION_SEND).apply {

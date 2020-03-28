@@ -5,7 +5,7 @@
     <string name="more_header">More</string>
     <string name="section_help_title">Help</string>
     <string name="section_help_subtitle">How to set-up Vidify TV</string>
-    <string name="section_help_description">To use Vidify TV, you\'ll also need the desktop app Vidify installed on the computer where the music is playing. Both the computer with Vidify and the device with Vidify TV have to be in the same network. You can read more about how to install it in the GitHub website (via the QR code, or directly at https://github.com/vidify/vidify).\n\nOnce you have installed Vidify, you\'ll have to select \"External\" as the video player. That way, the desktop app will send the music data to this app.\n\nFinally, connect to the computer inside this app. It should appear in the main screen, under the \"Devices\" section.</string>
+    <string name="section_help_description">To use Vidify TV, you\'ll also need the desktop app Vidify installed on the computer where the music is playing. Both the computer with Vidify and the device with Vidify TV have to be in the same network. You can read more about how to install it in the GitHub website (via the QR code, or directly at https://github.com/vidify/vidify).</string>
     <string name="section_remove_ads_title">Remove ads</string>
     <string name="section_remove_ads_subtitle">Obtain the complete app</string>
     <string name="section_remove_ads_description">To use the app without ads, please obtain a subscription to Vidify TV.</string>
