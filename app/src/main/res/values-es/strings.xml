@@ -5,15 +5,15 @@
     <string name="devices_header">Dispositivos</string>
     <string name="more_header">Más</string>
     <string name="section_share_card_title">Compartir</string>
-    <string name="section_share_title">Compartir app</string>
+    <string name="section_share_title">Compartir</string>
     <string name="section_remove_ads_card_title">Quitar publicidad</string>
     <string name="section_remove_ads_title">Quitar publicidad</string>
     <string name="section_remove_ads_description">descr_publi</string>
     <string name="section_help_description">ayuda_descr</string>
     <string name="section_help_card_title">Ayuda</string>
     <string name="section_help_title">Ayuda</string>
-    <string name="section_share_description">compartir_descr</string>
+    <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo al proyecto en GitHub en http://github.com/vidify/vidify</string>
     <string name="section_remove_ads_subtitle">Obtén la app por completo</string>
     <string name="section_help_subtitle">Cómo usar Vidify</string>
-    <string name="section_share_subtitle">Compartir la app</string>
+    <string name="section_share_subtitle">Comparte la app con este código QR</string>
 </resources>

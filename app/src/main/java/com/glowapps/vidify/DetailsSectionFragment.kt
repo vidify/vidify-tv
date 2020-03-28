@@ -1,12 +1,13 @@
 package com.glowapps.vidify
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.DetailsSupportFragment
+import androidx.leanback.app.DetailsSupportFragmentBackgroundController
 import androidx.leanback.widget.*
 import com.glowapps.vidify.model.DetailsSection
-import com.glowapps.vidify.model.DetailsSectionAction
 import com.glowapps.vidify.presenter.DetailsSectionDescriptionPresenter
 
 class DetailsSectionFragment : DetailsSupportFragment() {
@@ -17,30 +18,39 @@ class DetailsSectionFragment : DetailsSupportFragment() {
 
     private lateinit var data: DetailsSection
     private lateinit var rowsAdapter: ArrayObjectAdapter
+    private lateinit var backgroundController: DetailsSupportFragmentBackgroundController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate: $arguments")
         super.onCreate(savedInstanceState)
 
+        // Initializing the adapters
         val selector = ClassPresenterSelector().apply {
-            // Attach your media item details presenter to the row presenter:
             FullWidthDetailsOverviewRowPresenter(DetailsSectionDescriptionPresenter()).also {
                 addClassPresenter(DetailsOverviewRow::class.java, it)
             }
             addClassPresenter(ListRow::class.java, ListRowPresenter())
         }
-
         rowsAdapter = ArrayObjectAdapter(selector)
         adapter = rowsAdapter
 
+        // Setting the background
+        backgroundController = DetailsSupportFragmentBackgroundController(this).apply {
+            enableParallax()
+            coverBitmap = BitmapFactory.decodeResource(resources, R.drawable.bg)
+        }
+
+        // Setting the elements given the DetailsSection data
         if (arguments != null) {
             data = arguments!!.getParcelable(DATA_BUNDLE_ARG)!!
             Log.i(TAG, "data: $data")
 
-            // TODO add actions to DetailsSection
             val actionAdapter = ArrayObjectAdapter().apply {
-                add(Action(1, "Buy $9.99"))
-                add(Action(2, "Rent $2.99"))
+                if (data.actions != null) {
+                    for (action in data.actions!!) {
+                        add(Action(action.type.id, action.text))
+                    }
+                }
             }
 
             val detailsOverview = DetailsOverviewRow(data).apply {

@@ -16,10 +16,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import com.glowapps.vidify.model.DetailsSection
-import com.glowapps.vidify.model.DetailsSectionAction
+import com.glowapps.vidify.model.DetailsSectionButton
+import com.glowapps.vidify.model.DetailsSectionButtonAction
+import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
-import com.glowapps.vidify.presenter.DeviceCardPresenter
 import com.glowapps.vidify.presenter.DetailsSectionCardPresenter
+import com.glowapps.vidify.presenter.DeviceCardPresenter
 
 class MainFragment : BrowseSupportFragment() {
     companion object {
@@ -31,8 +33,10 @@ class MainFragment : BrowseSupportFragment() {
 
     // Bigger adapter to hold all rows
     private lateinit var rowsAdapter: ArrayObjectAdapter
+
     // Row adapter for the devices in the network
     private lateinit var deviceAdapter: ArrayObjectAdapter
+
     // Row with other cards, like settings, disabling ads, help...
     private lateinit var miscAdapter: ArrayObjectAdapter
     private var nsdManager: NsdManager? = null
@@ -79,32 +83,40 @@ class MainFragment : BrowseSupportFragment() {
         miscAdapter = ArrayObjectAdapter(DetailsSectionCardPresenter())
         miscAdapter.add(
             DetailsSection(
-                getString(R.string.section_help_card_title),
+                DetailsSectionCard.HELP,
                 getString(R.string.section_help_title),
                 getString(R.string.section_help_subtitle),
                 getString(R.string.section_help_description),
                 R.drawable.section_help_card,
-                DetailsSectionAction.HELP
+                R.drawable.qrcode_github,
+                null
             )
         )
         miscAdapter.add(
             DetailsSection(
-                getString(R.string.section_remove_ads_card_title),
+                DetailsSectionCard.REMOVE_ADS,
                 getString(R.string.section_remove_ads_title),
                 getString(R.string.section_remove_ads_subtitle),
                 getString(R.string.section_remove_ads_description),
                 R.drawable.section_remove_ads_card,
-                DetailsSectionAction.REMOVE_ADS
+                R.drawable.section_remove_ads_card,
+                arrayListOf(
+                    DetailsSectionButton(
+                        DetailsSectionButtonAction.REMOVE_ADS,
+                        getString(R.string.section_remove_ads_card_title)
+                    )
+                )
             )
         )
         miscAdapter.add(
             DetailsSection(
-                getString(R.string.section_share_card_title),
+                DetailsSectionCard.SHARE,
                 getString(R.string.section_share_title),
                 getString(R.string.section_share_subtitle),
                 getString(R.string.section_share_description),
                 R.drawable.section_share_card,
-                DetailsSectionAction.SHARE
+                R.drawable.qrcode_playstore,
+                null
             )
         )
         rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.more_header)), miscAdapter))
@@ -170,8 +182,9 @@ class MainFragment : BrowseSupportFragment() {
                 val uiModeManager = activity.getSystemService(UI_MODE_SERVICE) as UiModeManager
                 // Performing the action depending on the card data
                 val intent: Intent =
-                    if (item.action == DetailsSectionAction.SHARE
-                        && uiModeManager.currentModeType != Configuration.UI_MODE_TYPE_TELEVISION) {
+                    if (item.type == DetailsSectionCard.SHARE
+                        && uiModeManager.currentModeType != Configuration.UI_MODE_TYPE_TELEVISION
+                    ) {
                         // Sharing on a television will open an activity with a QR code and more
                         // details. On Android, the standard share menu will be shown.
                         Intent(Intent.ACTION_SEND).apply {

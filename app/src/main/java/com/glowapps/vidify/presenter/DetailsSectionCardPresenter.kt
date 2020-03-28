@@ -43,7 +43,7 @@ class DetailsSectionCardPresenter : Presenter() {
 
         // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)
-            .load(getDrawable(cardView.context, card.image))
+            .load(getDrawable(cardView.context, card.card_image))
             .into(cardView.mainImageView)
     }
 
