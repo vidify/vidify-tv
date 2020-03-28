@@ -103,7 +103,7 @@ class MainFragment : BrowseSupportFragment() {
                 arrayListOf(
                     DetailsSectionButton(
                         DetailsSectionButtonAction.REMOVE_ADS,
-                        getString(R.string.section_remove_ads_card_title)
+                        getString(R.string.section_remove_ads_title)
                     )
                 )
             )

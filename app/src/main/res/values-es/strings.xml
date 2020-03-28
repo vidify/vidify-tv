@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vidify TV</string>
-    <string name="main_description">Por favor abre Vidify en un dispositivo en el mismo WiFi para reproducir vídeos.</string>
     <string name="devices_header">Dispositivos</string>
     <string name="more_header">Más</string>
-    <string name="section_share_card_title">Compartir</string>
-    <string name="section_share_title">Compartir</string>
-    <string name="section_remove_ads_card_title">Quitar publicidad</string>
-    <string name="section_remove_ads_title">Quitar publicidad</string>
-    <string name="section_remove_ads_description">descr_publi</string>
-    <string name="section_help_description">ayuda_descr</string>
-    <string name="section_help_card_title">Ayuda</string>
     <string name="section_help_title">Ayuda</string>
-    <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo al proyecto en GitHub en http://github.com/vidify/vidify</string>
-    <string name="section_remove_ads_subtitle">Obtén la app por completo</string>
     <string name="section_help_subtitle">Cómo usar Vidify</string>
+    <string name="section_help_description">Para usar Vidify TV, necesitarás la app de escritorio Vidify instalada en el ordenador donde se reproduce la música. Ambos dispositivos tienen que estar en la misma red. Puedes leer más sobre cómo instalarlo en la página de GitHub (con el código QR o directamente en https://github.com/vidify/vidify).\n\nUna vez hayas installado Vidify, tendrás que seleccionar "External" como el reproductor de vídeos. De este modo, la app de escritorio enviará los datos de las canciones a Vidify TV.\n\nFinalmente, conéctate al ordenador desde esta app. Debería aparecer en la pantalla principal, en la sección de "Dispositivos".</string>
+    <string name="section_remove_ads_title">Quitar publicidad</string>
+    <string name="section_remove_ads_subtitle">Obtén la app por completo</string>
+    <string name="section_remove_ads_description">descr_publi</string>
+    <string name="section_share_title">Compartir</string>
     <string name="section_share_subtitle">Comparte la app con este código QR</string>
+    <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo al proyecto en GitHub en http://github.com/vidify/vidify</string>
 </resources>
