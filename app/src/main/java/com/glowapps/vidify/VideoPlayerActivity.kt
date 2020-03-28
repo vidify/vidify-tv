@@ -71,6 +71,7 @@ class VideoPlayerActivity : TVActivity() {
         youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
                 val url = if (msg.url == null) {
+                    // TODO video on error?
                     // msg.url = R.drawable.default_video
                     "fx2Z5ZD_Rbo"  // nothing
                 } else {

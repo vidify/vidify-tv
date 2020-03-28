@@ -15,12 +15,11 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
-import com.glowapps.vidify.misc.DetailViewActivity
-import com.glowapps.vidify.model.MiscAction
-import com.glowapps.vidify.model.MiscCard
+import com.glowapps.vidify.model.DetailsSection
+import com.glowapps.vidify.model.DetailsSectionAction
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
 import com.glowapps.vidify.presenter.DeviceCardPresenter
-import com.glowapps.vidify.presenter.MiscCardPresenter
+import com.glowapps.vidify.presenter.DetailsSectionCardPresenter
 
 class MainFragment : BrowseSupportFragment() {
     companion object {
@@ -77,26 +76,35 @@ class MainFragment : BrowseSupportFragment() {
         rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.devices_header)), deviceAdapter))
 
         // The second row contains other cards for settings and such
-        miscAdapter = ArrayObjectAdapter(MiscCardPresenter())
+        miscAdapter = ArrayObjectAdapter(DetailsSectionCardPresenter())
         miscAdapter.add(
-            MiscCard(
-                getString(R.string.help_card_title),
-                R.drawable.help_icon,
-                MiscAction.HELP
+            DetailsSection(
+                getString(R.string.section_help_card_title),
+                getString(R.string.section_help_title),
+                getString(R.string.section_help_subtitle),
+                getString(R.string.section_help_description),
+                R.drawable.section_help_card,
+                DetailsSectionAction.HELP
             )
         )
         miscAdapter.add(
-            MiscCard(
-                getString(R.string.remove_ads_card_title),
-                R.drawable.remove_ads_icon,
-                MiscAction.REMOVE_ADS
+            DetailsSection(
+                getString(R.string.section_remove_ads_card_title),
+                getString(R.string.section_remove_ads_title),
+                getString(R.string.section_remove_ads_subtitle),
+                getString(R.string.section_remove_ads_description),
+                R.drawable.section_remove_ads_card,
+                DetailsSectionAction.REMOVE_ADS
             )
         )
         miscAdapter.add(
-            MiscCard(
-                getString(R.string.share_card_title),
-                R.drawable.share_icon,
-                MiscAction.SHARE
+            DetailsSection(
+                getString(R.string.section_share_card_title),
+                getString(R.string.section_share_title),
+                getString(R.string.section_share_subtitle),
+                getString(R.string.section_share_description),
+                R.drawable.section_share_card,
+                DetailsSectionAction.SHARE
             )
         )
         rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.more_header)), miscAdapter))
@@ -156,84 +164,35 @@ class MainFragment : BrowseSupportFragment() {
                     putExtra(VideoPlayerActivity.DEVICE_ARG, item)
                 }
                 startActivity(activity, intent, null)
-            } else if (item is MiscCard) {
-                Log.i(TAG, "Miscellaneous card clicked: $item")
+            } else if (item is DetailsSection) {
+                Log.i(TAG, "Section card clicked: $item")
 
+                val uiModeManager = activity.getSystemService(UI_MODE_SERVICE) as UiModeManager
                 // Performing the action depending on the card data
-                val intent: Intent? = when (item.action) {
-                    MiscAction.HELP -> {
-                        Intent(activity, DetailViewActivity::class.java).apply {
-                            putExtra(
-                                DetailViewActivity.TITLE_ARG,
-                                activity.getString(R.string.help_title)
-                            )
-                            putExtra(
-                                DetailViewActivity.DESCRIPTION_ARG,
-                                activity.getString(R.string.help_descr)
-                            )
-                            putExtra(
-                                DetailViewActivity.IMAGE_ARG,
-                                R.drawable.help_icon
-                            )
-                        }
-                    }
-                    MiscAction.REMOVE_ADS -> {
-                        Intent(activity, DetailViewActivity::class.java).apply {
-                            putExtra(
-                                DetailViewActivity.TITLE_ARG,
-                                activity.getString(R.string.remove_ads_title)
-                            )
-                            putExtra(
-                                DetailViewActivity.DESCRIPTION_ARG,
-                                activity.getString(R.string.remove_ads_descr)
-                            )
-                            putExtra(
-                                DetailViewActivity.IMAGE_ARG,
-                                R.drawable.remove_ads_icon
-                            )
-                        }
-                    }
-                    MiscAction.SHARE -> {
+                val intent: Intent =
+                    if (item.action == DetailsSectionAction.SHARE
+                        && uiModeManager.currentModeType != Configuration.UI_MODE_TYPE_TELEVISION) {
                         // Sharing on a television will open an activity with a QR code and more
                         // details. On Android, the standard share menu will be shown.
-                        val uiModeManager =
-                            activity.getSystemService(UI_MODE_SERVICE) as UiModeManager
-                        if (uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION) {
-                            // Android TV
-                            Intent(activity, DetailViewActivity::class.java).apply {
-                                putExtra(
-                                    DetailViewActivity.TITLE_ARG,
-                                    activity.getString(R.string.share_title)
-                                )
-                                putExtra(
-                                    DetailViewActivity.DESCRIPTION_ARG,
-                                    activity.getString(R.string.share_descr)
-                                )
-                                putExtra(
-                                    DetailViewActivity.IMAGE_ARG,
-                                    R.drawable.share_icon
-                                )
-                            }
-                        } else {
-                            // Mobile / Tablet
-                            Intent(Intent.ACTION_SEND).apply {
-                                putExtra(
-                                    Intent.EXTRA_SUBJECT,
-                                    activity.getString(R.string.app_name)
-                                )
-                                putExtra(
-                                    Intent.EXTRA_TEXT,
-                                    activity.getString(R.string.playstore_link)
-                                )
-                                type = "text/plain"
-                            }
+                        Intent(Intent.ACTION_SEND).apply {
+                            putExtra(
+                                Intent.EXTRA_SUBJECT,
+                                activity.getString(R.string.app_name)
+                            )
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                activity.getString(R.string.playstore_link)
+                            )
+                            type = "text/plain"
+                        }
+                    } else {
+                        // The rest of the actions will use a DetailViewActivity
+                        Intent(activity, DetailsSectionActivity::class.java).apply {
+                            putExtra(DetailsSectionActivity.DATA_INTENT_ARG, item)
                         }
                     }
-                }
 
-                if (intent != null) {
-                    startActivity(activity, intent, null)
-                }
+                startActivity(activity, intent, null)
             }
         }
     }

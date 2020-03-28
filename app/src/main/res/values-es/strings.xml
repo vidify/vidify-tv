@@ -2,15 +2,18 @@
 <resources>
     <string name="app_name">Vidify TV</string>
     <string name="main_description">Por favor abre Vidify en un dispositivo en el mismo WiFi para reproducir vídeos.</string>
-    <string name="help_title">Cómo usar Vidify TV</string>
-    <string name="help_descr">test1</string>
-    <string name="remove_ads_descr">test2</string>
-    <string name="remove_ads_title">Eliminar anuncios</string>
-    <string name="help_card_title">Ayuda</string>
-    <string name="remove_ads_card_title">Eliminar anuncios</string>
-    <string name="share_card_title">Compartir</string>
-    <string name="share_title">Compartir</string>
-    <string name="share_descr">test3</string>
     <string name="devices_header">Dispositivos</string>
     <string name="more_header">Más</string>
+    <string name="section_share_card_title">Compartir</string>
+    <string name="section_share_title">Compartir app</string>
+    <string name="section_remove_ads_card_title">Quitar publicidad</string>
+    <string name="section_remove_ads_title">Quitar publicidad</string>
+    <string name="section_remove_ads_description">descr_publi</string>
+    <string name="section_help_description">ayuda_descr</string>
+    <string name="section_help_card_title">Ayuda</string>
+    <string name="section_help_title">Ayuda</string>
+    <string name="section_share_description">compartir_descr</string>
+    <string name="section_remove_ads_subtitle">Obtén la app por completo</string>
+    <string name="section_help_subtitle">Cómo usar Vidify</string>
+    <string name="section_share_subtitle">Compartir la app</string>
 </resources>

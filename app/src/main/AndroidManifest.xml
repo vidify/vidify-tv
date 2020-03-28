@@ -43,18 +43,13 @@
 
         <activity android:name=".VideoPlayerActivity"
             android:screenOrientation="landscape"
+            android:theme="@style/Theme.Leanback"
             tools:ignore="LockedOrientationActivity" />
 
-        <activity android:name=".misc.DetailViewActivity"
+        <activity android:name=".DetailsSectionActivity"
             android:screenOrientation="landscape"
+            android:theme="@style/Theme.Leanback"
             tools:ignore="LockedOrientationActivity" />
 
-        <activity android:name=".misc.QRCodeActivity"
-            android:screenOrientation="landscape"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity android:name=".misc.RemoveAdsActivity"
-            android:screenOrientation="landscape"
-            tools:ignore="LockedOrientationActivity" />
     </application>
 </manifest>

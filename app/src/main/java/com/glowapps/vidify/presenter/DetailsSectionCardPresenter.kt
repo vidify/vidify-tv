@@ -10,10 +10,10 @@ import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.glowapps.vidify.R
-import com.glowapps.vidify.model.MiscCard
+import com.glowapps.vidify.model.DetailsSection
 
 
-class MiscCardPresenter : Presenter() {
+class DetailsSectionCardPresenter : Presenter() {
     companion object {
         private const val TAG = "MiscCardPresenter"
         private const val ANIMATION_DURATION = 200
@@ -38,7 +38,7 @@ class MiscCardPresenter : Presenter() {
 
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         val cardView = viewHolder.view as ImageCardView
-        val card = item as MiscCard
+        val card = item as DetailsSection
         cardView.titleText = card.title
 
         // Adding the image with Glide so that it will be cached.
