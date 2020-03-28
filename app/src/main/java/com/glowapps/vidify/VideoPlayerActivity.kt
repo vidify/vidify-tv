@@ -25,6 +25,7 @@ class VideoPlayerActivity : TVActivity() {
     private lateinit var youTubePlayerView: YouTubePlayerView
     private lateinit var listenerThread: Thread
     private lateinit var listenerRunnable: Listener
+    private val youtubeIDRegex = Regex("""^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*""");
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,28 +82,42 @@ class VideoPlayerActivity : TVActivity() {
         super.onPause()
     }
 
+    private fun getYouTubeID(url: String): String? {
+        val match = youtubeIDRegex.find(url)
+        if (match != null) {
+            return match.groupValues[2]
+        }
+
+        return null
+    }
+
     // Start playing a new video from the message's url, and with its attributes
     @Synchronized
     fun startVideo(msg: Message) {
         youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                val url = if (msg.url == null) {
-                    // TODO video on error?
-                    // msg.url = R.drawable.default_video
-                    "fx2Z5ZD_Rbo"  // nothing
-                } else {
-                    msg.url!!.split("watch?v=")[1]
-                }
+                // A null url won't modify the player status. The player needs the YouTube ID,
+                // so this first attempts to obtain it from the URL. If it fails, the status
+                // won't be modified either.
+                Log.i(TAG, "Obtaining ID from ${msg.url}")
+                if (msg.url == null) return
+                val id = getYouTubeID(msg.url!!) ?: return
+
+                // When starting a new video, only the absolute position provided is taken
+                // into account.
                 val position = if (msg.absolutePos == null) {
                     0F
                 } else {
                     msg.absolutePos!!.toFloat() / 1000F
                 }
-                Log.i(TAG, "Playing video with ID $url at $position seconds")
-                youTubePlayer.loadVideo(url, position)
+
+                Log.i(TAG, "Playing video with ID $id at $position seconds")
+                youTubePlayer.loadVideo(id, position)
+
+                // The video may also start paused.
                 if (msg.isPlaying != null && !msg.isPlaying!!) {
-                    Log.i(TAG, "Video starts paused")
                     youTubePlayer.pause()
+                    Log.i(TAG, "The video starts paused")
                 }
             }
         })

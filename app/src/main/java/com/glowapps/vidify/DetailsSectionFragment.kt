@@ -1,21 +1,16 @@
 package com.glowapps.vidify
 
-import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.DetailsSupportFragment
 import androidx.leanback.app.DetailsSupportFragmentBackgroundController
 import androidx.leanback.widget.*
 import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.model.DetailsSectionButtonAction
-import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.presenter.DetailsSectionDescriptionPresenter
 import com.glowapps.vidify.util.getBackground
-import com.glowapps.vidify.util.isTV
 
 class DetailsSectionFragment : DetailsSupportFragment() {
     companion object {
