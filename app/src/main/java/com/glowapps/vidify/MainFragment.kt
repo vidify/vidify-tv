@@ -1,10 +1,7 @@
 package com.glowapps.vidify
 
-import android.app.UiModeManager
 import android.content.Context
-import android.content.Context.UI_MODE_SERVICE
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
@@ -20,8 +17,8 @@ import com.glowapps.vidify.model.DetailsSectionButton
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
-import com.glowapps.vidify.presenter.RippleCardPresenter
-import com.glowapps.vidify.presenter.DefaultCardPresenter
+import com.glowapps.vidify.presenter.SectionCardPresenter
+import com.glowapps.vidify.presenter.DeviceCardPresenter
 import com.glowapps.vidify.util.isTV
 
 class MainFragment : BrowseSupportFragment() {
@@ -79,9 +76,9 @@ class MainFragment : BrowseSupportFragment() {
         adapter = rowsAdapter
 
         // The first row contains the devices in the network, with a header named "Devices".
-        deviceAdapter = ArrayObjectAdapter(DefaultCardPresenter())
+        deviceAdapter = ArrayObjectAdapter(DeviceCardPresenter())
         // The second row contains other cards for settings and such
-        sectionAdapter = ArrayObjectAdapter(RippleCardPresenter())
+        sectionAdapter = ArrayObjectAdapter(SectionCardPresenter())
     }
 
     private fun createRows() {
@@ -100,16 +97,28 @@ class MainFragment : BrowseSupportFragment() {
         )
         sectionAdapter.add(
             DetailsSection(
-                DetailsSectionCard.REMOVE_ADS,
-                getString(R.string.section_remove_ads_title),
-                getString(R.string.section_remove_ads_subtitle),
-                getString(R.string.section_remove_ads_description),
-                R.drawable.section_remove_ads_card,
-                R.drawable.section_remove_ads_card,
+                DetailsSectionCard.DONATE,
+                getString(R.string.section_donate_title),
+                getString(R.string.section_donate_subtitle),
+                getString(R.string.section_donate_description),
+                R.drawable.section_donate_card,
+                R.drawable.section_donate_card,
                 arrayListOf(
                     DetailsSectionButton(
-                        DetailsSectionButtonAction.REMOVE_ADS,
-                        getString(R.string.section_remove_ads_title)
+                        DetailsSectionButtonAction.DONATE_1,
+                        getString(R.string.section_donate_button_1)
+                    ),
+                    DetailsSectionButton(
+                        DetailsSectionButtonAction.DONATE_5,
+                        getString(R.string.section_donate_button_5)
+                    ),
+                    DetailsSectionButton(
+                        DetailsSectionButtonAction.DONATE_15,
+                        getString(R.string.section_donate_button_15)
+                    ),
+                    DetailsSectionButton(
+                        DetailsSectionButtonAction.DONATE_50,
+                        getString(R.string.section_donate_button_50)
                     )
                 )
             )

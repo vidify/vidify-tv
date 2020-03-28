@@ -14,7 +14,7 @@ import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
 
 // Custom card presenter with a ripple effect, rather than the conventional style.
-class RippleCardPresenter : Presenter() {
+class SectionCardPresenter : Presenter() {
     companion object {
         private const val TAG = "RippleCardPresenter"
         private const val ANIMATION_DURATION = 200

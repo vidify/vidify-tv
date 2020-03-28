@@ -13,7 +13,7 @@ import com.glowapps.vidify.R
 import java.util.*
 
 // The CardPresenter generates card views, given their name and other basic attributes.
-class DefaultCardPresenter : Presenter() {
+class DeviceCardPresenter : Presenter() {
     companion object {
         const val TAG = "DefaultCardPresenter"
     }
@@ -63,7 +63,6 @@ class DefaultCardPresenter : Presenter() {
 
     // This is called when a view is recycled inside a RecyclerView.
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
-
         // Setting the card's basic attributes
         val cardView = viewHolder.view as ImageCardView
         val width = cardView.resources.getDimensionPixelSize(R.dimen.default_card_width)
