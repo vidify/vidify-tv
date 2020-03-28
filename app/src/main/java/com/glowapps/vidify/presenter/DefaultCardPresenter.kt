@@ -1,6 +1,7 @@
 package com.glowapps.vidify.presenter
 
 import android.net.nsd.NsdServiceInfo
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -11,10 +12,13 @@ import com.bumptech.glide.request.RequestOptions
 import com.glowapps.vidify.R
 import java.util.*
 
-
 // The CardPresenter generates card views, given their name and other basic attributes.
-class DeviceCardPresenter : Presenter() {
-    private var mSelectedBackgroundColor = -1
+class DefaultCardPresenter : Presenter() {
+    companion object {
+        const val TAG = "DefaultCardPresenter"
+    }
+
+    private var selectedBackgroundColor = -1
     private var defaultBackgroundColor = -1
 
     // The parent ViewGroup contains various views that are going to be created within the
@@ -29,7 +33,7 @@ class DeviceCardPresenter : Presenter() {
                 parent!!.context,
                 R.color.default_background
             )
-        mSelectedBackgroundColor =
+        selectedBackgroundColor =
             ContextCompat.getColor(
                 parent.context,
                 R.color.selected_background
@@ -50,7 +54,7 @@ class DeviceCardPresenter : Presenter() {
 
     // Switching between the default and selected colors.
     private fun updateCardBackgroundColor(view: ImageCardView, selected: Boolean) {
-        val color = if (selected) mSelectedBackgroundColor else defaultBackgroundColor
+        val color = if (selected) selectedBackgroundColor else defaultBackgroundColor
         // Both background colors should be set because the view's
         // background is temporarily visible during animations.
         view.setBackgroundColor(color)
@@ -59,6 +63,7 @@ class DeviceCardPresenter : Presenter() {
 
     // This is called when a view is recycled inside a RecyclerView.
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
+
         // Setting the card's basic attributes
         val cardView = viewHolder.view as ImageCardView
         val width = cardView.resources.getDimensionPixelSize(R.dimen.default_card_width)
@@ -67,6 +72,7 @@ class DeviceCardPresenter : Presenter() {
 
         // Setting the card's contents: title, description and image
         val device: NsdServiceInfo = item as NsdServiceInfo
+        Log.i(TAG, "refreshing card view for $device")
         cardView.titleText = device.serviceName
 
         // By default, the description is the API. If it isn't found, the OS name is used.
@@ -93,8 +99,7 @@ class DeviceCardPresenter : Presenter() {
             .into(cardView.mainImageView)
     }
 
-    // The opposite of onBindViewHolder. It only removes the view references so that the garbage
-    // collector can free up memory.
+    // This only removes the view references so that the garbage collector can free up memory.
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
         val cardView = viewHolder!!.view as ImageCardView
         cardView.badgeImage = null

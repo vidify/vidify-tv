@@ -7,7 +7,6 @@
         <item name="android:colorPrimary">@color/fastlane_background</item>
     </style>
 
-    <!-- Icon card style with custom focus handler. -->
     <style name="DefaultCardStyle" parent="Widget.Leanback.ImageCardViewStyle">
         <item name="cardBackground">@null</item>
     </style>

@@ -1,30 +1,31 @@
 package com.glowapps.vidify.model
 
 import android.os.Parcelable
-import androidx.leanback.widget.Action
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 
-// The different types of DetailsSection
+// This package defines the different data structures needed to both create a card in the main
+// fragment and start a DetailsSectionCardPresenter programmatically (only creating an Intent).
+
+// The different types of sections.
 enum class DetailsSectionCard {
     HELP,
     REMOVE_ADS,
     SHARE
 }
 
-// The buttons used in the sections
+// The type of buttons that can be used in DetailsSection (this can be expanded).
 enum class DetailsSectionButtonAction(val id: Long) {
     REMOVE_ADS(0)
 }
 
-// A parcelable alternative to Action with information about the button
+// A parcelable alternative to Action with information about the button inside a DetailsSection
 @Parcelize
 data class DetailsSectionButton(
     var type: DetailsSectionButtonAction,
     var text: String
 ) : Parcelable
 
-// Information about the section button and the fragment data itself
+// Main dataclass with information to set-up both the section card and the fragment
 @Parcelize
 data class DetailsSection(
     var type: DetailsSectionCard,

@@ -20,8 +20,8 @@ import com.glowapps.vidify.model.DetailsSectionButton
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
-import com.glowapps.vidify.presenter.DetailsSectionCardPresenter
-import com.glowapps.vidify.presenter.DeviceCardPresenter
+import com.glowapps.vidify.presenter.RippleCardPresenter
+import com.glowapps.vidify.presenter.DefaultCardPresenter
 
 class MainFragment : BrowseSupportFragment() {
     companion object {
@@ -76,11 +76,11 @@ class MainFragment : BrowseSupportFragment() {
         adapter = rowsAdapter
 
         // The first row contains the devices in the network, with a header named "Devices".
-        deviceAdapter = ArrayObjectAdapter(DeviceCardPresenter())
+        deviceAdapter = ArrayObjectAdapter(DefaultCardPresenter())
         rowsAdapter.add(ListRow(HeaderItem(0, getString(R.string.devices_header)), deviceAdapter))
 
         // The second row contains other cards for settings and such
-        miscAdapter = ArrayObjectAdapter(DetailsSectionCardPresenter())
+        miscAdapter = ArrayObjectAdapter(RippleCardPresenter())
         miscAdapter.add(
             DetailsSection(
                 DetailsSectionCard.HELP,

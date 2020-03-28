@@ -2,6 +2,7 @@ package com.glowapps.vidify.presenter
 
 import android.animation.ObjectAnimator
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -12,8 +13,8 @@ import com.bumptech.glide.Glide
 import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
 
-
-class DetailsSectionCardPresenter : Presenter() {
+// Custom card presenter with a ripple effect, rather than the conventional style.
+class RippleCardPresenter : Presenter() {
     companion object {
         private const val TAG = "MiscCardPresenter"
         private const val ANIMATION_DURATION = 200
@@ -39,6 +40,7 @@ class DetailsSectionCardPresenter : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         val cardView = viewHolder.view as ImageCardView
         val card = item as DetailsSection
+        Log.i(TAG, "refreshing card view for: $card")
         cardView.titleText = card.title
 
         // Adding the image with Glide so that it will be cached.
@@ -47,8 +49,7 @@ class DetailsSectionCardPresenter : Presenter() {
             .into(cardView.mainImageView)
     }
 
-    // The opposite of onBindViewHolder. It only removes the view references so that the garbage
-    // collector can free up memory.
+    // This only removes the view references so that the garbage collector can free up memory.
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
         val cardView = viewHolder!!.view as ImageCardView
         cardView.badgeImage = null

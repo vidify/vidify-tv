@@ -21,7 +21,6 @@ class DetailsSectionFragment : DetailsSupportFragment() {
     private lateinit var backgroundController: DetailsSupportFragmentBackgroundController
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate: $arguments")
         super.onCreate(savedInstanceState)
 
         // Initializing the adapters
@@ -43,7 +42,7 @@ class DetailsSectionFragment : DetailsSupportFragment() {
         // Setting the elements given the DetailsSection data
         if (arguments != null) {
             data = arguments!!.getParcelable(DATA_BUNDLE_ARG)!!
-            Log.i(TAG, "data: $data")
+            Log.i(TAG, "creating section with data: $data")
 
             val actionAdapter = ArrayObjectAdapter().apply {
                 if (data.actions != null) {

@@ -4,21 +4,18 @@ import android.os.Bundle
 import android.util.Log
 import com.glowapps.vidify.model.DetailsSection
 
-
 class DetailsSectionActivity : TVActivity() {
     companion object {
         const val TAG = "DetailsSectionActivity"
-        // Extra parameter names
         const val DATA_INTENT_ARG = "data_intent_arg"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.details_fragment)
 
         if (savedInstanceState == null) {
-            // Obtaining the extra parameters and passing them to the fragment
+            Log.i(TAG, "Passing section parameters to the section fragment")
             val params: DetailsSection = intent.getParcelableExtra(DATA_INTENT_ARG)!!
             val details = DetailsSectionFragment()
             val bundle = Bundle()

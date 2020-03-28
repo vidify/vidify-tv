@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 
-// The base activity class with a bit of customization to have the same TV interface
-// in every device.
+// The base activity class with a bit of customization to force the same TV-like interface in
+// every device.
 open class TVActivity : FragmentActivity() {
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -13,11 +13,11 @@ class DeviceDiscoveryListener(
     private val lostService: (NsdServiceInfo) -> Unit
 ) : NsdManager.DiscoveryListener {
     override fun onDiscoveryStarted(regType: String) {
-        Log.d(MainFragment.TAG, "Service discovery started")
+        Log.i(MainFragment.TAG, "Service discovery started")
     }
 
     override fun onServiceFound(service: NsdServiceInfo) {
-        Log.d(MainFragment.TAG, "Service discovery success: $service")
+        Log.i(MainFragment.TAG, "Service discovery success: $service")
         when {
             service.serviceType != MainFragment.SERVICE_TYPE ->
                 Log.d(MainFragment.TAG, "Unknown Service Type: " + service.serviceType)
@@ -38,17 +38,11 @@ class DeviceDiscoveryListener(
         Log.i(MainFragment.TAG, "Discovery stopped: $serviceType")
     }
 
-    override fun onStartDiscoveryFailed(
-        serviceType: String,
-        errorCode: Int
-    ) {
+    override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
         Log.e(MainFragment.TAG, "onStartDiscoveryFailed: $serviceType. Error code: $errorCode")
     }
 
-    override fun onStopDiscoveryFailed(
-        serviceType: String,
-        errorCode: Int
-    ) {
+    override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
         Log.e(MainFragment.TAG, "onStopDiscoveryFailed: $serviceType. Error code: $errorCode")
     }
 }
