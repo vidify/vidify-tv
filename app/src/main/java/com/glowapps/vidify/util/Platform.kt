@@ -13,5 +13,5 @@ fun isTV(activity: Activity): Boolean {
 
 // The background size depends on the type of device
 fun getBackground(activity: Activity): Int {
-    return if (isTV(activity)) { R.drawable.bg_4k } else { R.drawable.bg_1080p }
+    return if (isTV(activity)) { R.drawable.bg_tv } else { R.drawable.bg_mobile }
 }
