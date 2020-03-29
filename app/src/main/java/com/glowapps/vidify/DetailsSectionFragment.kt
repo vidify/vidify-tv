@@ -11,7 +11,6 @@ import com.android.billingclient.api.*
 import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.presenter.DetailsSectionDescriptionPresenter
-import com.glowapps.vidify.util.getBackground
 
 data class Purchasable(
     val button_type: DetailsSectionButtonAction,
@@ -83,7 +82,7 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
             val options = BitmapFactory.Options()
             options.inScaled = false
             coverBitmap =
-                BitmapFactory.decodeResource(resources, getBackground(activity!!), options)
+                BitmapFactory.decodeResource(resources, R.drawable.background, options)
         }
 
         // Setting the elements given the DetailsSection data
