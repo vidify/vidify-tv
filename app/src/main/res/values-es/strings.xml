@@ -3,17 +3,15 @@
     <string name="app_name">Vidify TV</string>
     <string name="devices_header">Dispositivos</string>
     <string name="more_header">Más</string>
+    <string name="demo_message">Demo de Vidify TV</string>
     <string name="section_help_title">Ayuda</string>
     <string name="section_help_subtitle">Cómo usar Vidify</string>
-    <string name="section_help_description">Para usar Vidify TV, necesitarás la app de escritorio Vidify instalada en el ordenador donde se reproduce la música. Ambos dispositivos tienen que estar en la misma red. Puedes leer más sobre cómo instalarlo en la página de GitHub (con el código QR o directamente en https://github.com/vidify/vidify).</string>
-    <string name="section_donate_title">Ayudar al desarrollador</string>
-    <string name="section_donate_subtitle">Échale una mano al desarrollador</string>
-    <string name="section_donate_description">Con que hagas correr la voz sobre la app es suficiente, pero si quieres donar no me quejaré ;)</string>
-    <string name="section_donate_button_1">Donar 1€</string>
-    <string name="section_donate_button_5">Donar 5€</string>
-    <string name="section_donate_button_15">Donar 15€</string>
-    <string name="section_donate_button_50">Donar 50€</string>
+    <string name="section_help_description">Necesitarás la app de escritorio Vidify instalada en el ordenador donde se reproduce la música. Ambos dispositivos tienen que estar en la misma red. Puedes leer más sobre cómo instalarlo en la página de GitHub (con el código QR o directamente en https://github.com/vidify/vidify).</string>
+    <string name="section_subscribe_title">Obtener app completa</string>
+    <string name="section_subscribe_subtitle">Subscríbete para obtener acceso completo</string>
+    <string name="section_subscribe_description">Para que sea posible continuar el desarrollo de Vidify, por favor subscríbete. Esto eliminará los mensajes que indican que estás usando una versión de prueba, y te dará acceso a funciones futuras.</string>
+    <string name="section_subscribe_button">Donar 1€</string>
     <string name="section_share_title">Compartir</string>
-    <string name="section_share_subtitle">Comparte la app con este código QR</string>
+    <string name="section_share_subtitle">Usa este código QR para compartir Vidify TV</string>
     <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo al proyecto en GitHub en http://github.com/vidify/vidify</string>
 </resources>

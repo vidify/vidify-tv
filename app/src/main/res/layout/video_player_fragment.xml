@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/youtube_layout"
     android:layout_width="match_parent"
@@ -11,4 +11,17 @@
         android:id="@+id/youtube_player_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-</LinearLayout>
+
+        <!-- The demo message -->
+        <TextView
+            android:id="@+id/demo_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="10dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:textSize="45sp"
+            android:text="@string/demo_message" />
+</RelativeLayout>

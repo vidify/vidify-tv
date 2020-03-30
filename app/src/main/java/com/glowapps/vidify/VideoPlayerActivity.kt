@@ -4,12 +4,18 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.util.JsonReader
 import android.util.Log
+import android.view.View
+import android.widget.TextView
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.Purchase
 import com.glowapps.vidify.model.Message
+import com.glowapps.vidify.model.Purchasable
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import org.w3c.dom.Text
 import java.io.InputStreamReader
 import java.net.Socket
 import java.net.SocketException
@@ -22,35 +28,25 @@ class VideoPlayerActivity : TVActivity() {
     }
 
     private lateinit var device: NsdServiceInfo
+
     private lateinit var youTubePlayerView: YouTubePlayerView
+    private val youtubeIDRegex = Regex("""^.*(youtu\.be/|v/|u/\w/|embed/|watch\?v=|&v=)([^#&?]*).*""");
+
+    private lateinit var billingSystem: BillingSystem
+
     private lateinit var listenerThread: Thread
     private lateinit var listenerRunnable: Listener
-    private val youtubeIDRegex = Regex("""^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*""");
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.video_player_fragment)
-
         device = intent.getParcelableExtra(DEVICE_ARG)!!
 
-        // Initializing the YouTube player and inserting it into the layout
-        Log.i(TAG, "Creating YouTube player")
-        youTubePlayerView = findViewById(R.id.youtube_player_view)
-        lifecycle.addObserver(youTubePlayerView)
-        // The custom player UI is as restricted and minimal as possible, since the user won't have
-        // any control over what's playing.
-        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                youTubePlayerView.inflateCustomPlayerUi(R.layout.custom_youtube_player)
-                youTubePlayer.addListener(object : AbstractYouTubePlayerListener() {})
-            }
-        })
-        youTubePlayerView.enterFullScreen()
-        muteVideo()
-
-        listenerRunnable = Listener()
-        listenerThread = Thread(listenerRunnable)
-        listenerThread.start()
+        initBillingSystem()
+        // The button has to be modified before its layout is inflated for the player
+        toggleDemoMessage()
+        initPlayer()
+        startListenerThread()
     }
 
     override fun onDestroy() {
@@ -80,6 +76,41 @@ class VideoPlayerActivity : TVActivity() {
         listenerRunnable.disconnect()
 
         super.onPause()
+    }
+
+    private fun startListenerThread() {
+        listenerRunnable = Listener()
+        listenerThread = Thread(listenerRunnable)
+        listenerThread.start()
+    }
+
+    private fun initPlayer() {
+        // Initializing the YouTube player and inserting it into the layout
+        Log.i(TAG, "Creating YouTube player")
+        youTubePlayerView = findViewById(R.id.youtube_player_view)
+        lifecycle.addObserver(youTubePlayerView)
+        // The custom player UI is as restricted and minimal as possible, since the user won't have
+        // any control over what's playing.
+        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                youTubePlayerView.inflateCustomPlayerUi(R.layout.custom_youtube_player)
+                youTubePlayer.addListener(object : AbstractYouTubePlayerListener() {})
+            }
+        })
+        youTubePlayerView.enterFullScreen()
+        muteVideo()
+    }
+
+    private fun initBillingSystem() {
+        billingSystem = BillingSystem(this)
+    }
+
+    private fun toggleDemoMessage() {
+        // If the full app is purchased the demo message will be removed
+        if (billingSystem.isActive(Purchasable.SUBSCRIBE)) {
+            val msg: TextView = findViewById(R.id.demo_message)
+            msg.visibility = View.INVISIBLE
+        }
     }
 
     private fun getYouTubeID(url: String): String? {

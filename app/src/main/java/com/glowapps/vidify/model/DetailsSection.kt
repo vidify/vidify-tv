@@ -9,16 +9,14 @@ import kotlinx.android.parcel.Parcelize
 // The different types of sections.
 enum class DetailsSectionCard {
     HELP,
-    DONATE,
+    SUBSCRIBE,
     SHARE
 }
 
 // The type of buttons that can be used in DetailsSection (this can be expanded).
 enum class DetailsSectionButtonAction(val id: Long) {
-    DONATE_1(0),
-    DONATE_5(0),
-    DONATE_15(0),
-    DONATE_50(0)
+    SUBSCRIBE(0),
+    SHARE(1)
 }
 
 // A parcelable alternative to Action with information about the button inside a DetailsSection

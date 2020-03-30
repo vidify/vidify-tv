@@ -3,17 +3,15 @@
     <string name="playstore_link" translatable="false">https://play.google.com/store/apps/details?id=com.glowapps.vidify</string>
     <string name="devices_header">Devices</string>
     <string name="more_header">More</string>
+    <string name="demo_message">Vidify TV Demo</string>
     <string name="section_help_title">Help</string>
     <string name="section_help_subtitle">How to set-up Vidify TV</string>
-    <string name="section_help_description">To use Vidify TV, you\'ll also need the desktop app Vidify installed on the computer where the music is playing. Both the computer with Vidify and the device with Vidify TV have to be in the same network. You can read more about how to install it in the GitHub website (via the QR code, or directly at https://github.com/vidify/vidify).</string>
-    <string name="section_donate_title">Support the dev</string>
-    <string name="section_donate_subtitle">Help the dev out</string>
-    <string name="section_donate_description">Spreading the word about Vidify is enough for me, but if you want to make a donation I won\'t complain ;)</string>
-    <string name="section_donate_button_1">Donate $1</string>
-    <string name="section_donate_button_5">Donate $5</string>
-    <string name="section_donate_button_15">Donate $15</string>
-    <string name="section_donate_button_50">Donate $50</string>
-    <string name="section_share_title">Share</string>Donate $50
-    <string name="section_share_subtitle">Share the app via this QR-code</string>Donate $50
-    <string name="section_share_description">You can also visit the Play Store page at http://bit.Donate $50ly/vidifyapp, and check out the GitHub project at https://github.com/vidify/vidify</string>
+    <string name="section_help_description">You\'ll also need the desktop app Vidify installed on the computer where the music is playing. Both the computer with Vidify and the device with Vidify TV have to be in the same network. You can read more about how to install it in the GitHub website (via the QR code, or directly at https://github.com/vidify/vidify).</string>
+    <string name="section_subscribe_title">Obtain full app</string>
+    <string name="section_subscribe_subtitle">Subscribe to obtain full access to the app</string>
+    <string name="section_subscribe_description">To make it possible to continue Vidify\'s development, please subscribe. This will remove the demo version messages and will give you access to future extra features.</string>
+    <string name="section_subscribe_button">Get the full app</string>
+    <string name="section_share_title">Share</string>
+    <string name="section_share_subtitle">Use this QR code to share the app</string>
+    <string name="section_share_description">You can also visit the Play Store page at http://bit.ly/vidifyapp, and check out the GitHub project at https://github.com/vidify/vidify</string>
 </resources>

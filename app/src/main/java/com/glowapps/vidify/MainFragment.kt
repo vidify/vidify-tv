@@ -97,28 +97,16 @@ class MainFragment : BrowseSupportFragment() {
         )
         sectionAdapter.add(
             DetailsSection(
-                DetailsSectionCard.DONATE,
-                getString(R.string.section_donate_title),
-                getString(R.string.section_donate_subtitle),
-                getString(R.string.section_donate_description),
-                R.drawable.section_donate_card,
-                R.drawable.section_donate_card,
+                DetailsSectionCard.SUBSCRIBE,
+                getString(R.string.section_subscribe_title),
+                getString(R.string.section_subscribe_subtitle),
+                getString(R.string.section_subscribe_description),
+                R.drawable.section_subscribe_card,
+                R.drawable.section_subscribe_card,
                 arrayListOf(
                     DetailsSectionButton(
-                        DetailsSectionButtonAction.DONATE_1,
-                        getString(R.string.section_donate_button_1)
-                    ),
-                    DetailsSectionButton(
-                        DetailsSectionButtonAction.DONATE_5,
-                        getString(R.string.section_donate_button_5)
-                    ),
-                    DetailsSectionButton(
-                        DetailsSectionButtonAction.DONATE_15,
-                        getString(R.string.section_donate_button_15)
-                    ),
-                    DetailsSectionButton(
-                        DetailsSectionButtonAction.DONATE_50,
-                        getString(R.string.section_donate_button_50)
+                        DetailsSectionButtonAction.SUBSCRIBE,
+                        getString(R.string.section_subscribe_button)
                     )
                 )
             )
@@ -197,28 +185,9 @@ class MainFragment : BrowseSupportFragment() {
                 Log.i(TAG, "Section card clicked: $item")
 
                 // Performing the action depending on the card data
-                val intent: Intent =
-                    if (item.type == DetailsSectionCard.SHARE && !isTV(activity)) {
-                        // Sharing on a television will open an activity with a QR code and more
-                        // details. On Android, the standard share menu will be shown.
-                        Intent(Intent.ACTION_SEND).apply {
-                            putExtra(
-                                Intent.EXTRA_SUBJECT,
-                                activity.getString(R.string.app_name)
-                            )
-                            putExtra(
-                                Intent.EXTRA_TEXT,
-                                activity.getString(R.string.playstore_link)
-                            )
-                            type = "text/plain"
-                        }
-                    } else {
-                        // The rest of the actions will use a DetailViewActivity
-                        Intent(activity, DetailsSectionActivity::class.java).apply {
-                            putExtra(DetailsSectionActivity.DATA_INTENT_ARG, item)
-                        }
-                    }
-
+                val intent = Intent(activity, DetailsSectionActivity::class.java).apply {
+                    putExtra(DetailsSectionActivity.DATA_INTENT_ARG, item)
+                }
                 startActivity(activity, intent, null)
             }
         }
