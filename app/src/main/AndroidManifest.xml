@@ -23,12 +23,24 @@
         android:logo="@mipmap/logo"
         android:label="@string/app_name">
 
-        <activity android:name=".TVActivity"
+        <activity android:name=".tv.BaseTVActivity"
             android:screenOrientation="landscape"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".mobile.MainMobileActivity"
+            android:icon="@mipmap/logo"
+            android:logo="@mipmap/logo"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".tv.MainTVActivity"
             android:icon="@mipmap/logo"
             android:logo="@mipmap/logo"
             android:label="@string/app_name"
@@ -37,17 +49,16 @@
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".VideoPlayerActivity"
+        <activity android:name=".player.VideoPlayerActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Leanback"
             tools:ignore="LockedOrientationActivity" />
 
-        <activity android:name=".DetailsSectionActivity"
+        <activity android:name=".tv.DetailsSectionActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Leanback"
             tools:ignore="LockedOrientationActivity" />

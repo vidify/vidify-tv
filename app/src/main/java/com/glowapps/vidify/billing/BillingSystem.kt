@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.billing
 
 import android.app.Activity
 import android.content.Context
@@ -77,7 +77,8 @@ class BillingSystem(private val context: Context) : PurchasesUpdatedListener {
         billingClient.querySkuDetailsAsync(params) { billingResult, skuDetailsList ->
             // Process the result.
             if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-                Log.e(TAG, "Billing result unsuccessful:" +
+                Log.e(
+                    TAG, "Billing result unsuccessful:" +
                         " ${billingResult.responseCode} ${billingResult.debugMessage}")
                 return@querySkuDetailsAsync
             }

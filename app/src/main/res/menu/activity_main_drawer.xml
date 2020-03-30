@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_devices"
+            android:icon="@drawable/icon_devices"
+            android:title="@string/devices_header" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/icon_help"
+            android:title="@string/section_help_title" />
+        <item
+            android:id="@+id/nav_subscribe"
+            android:icon="@drawable/icon_subscribe"
+            android:title="@string/section_subscribe_title" />
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/icon_share"
+            android:title="@string/section_share_title" />
+    </group>
+</menu>

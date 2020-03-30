@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.tv
 
 import android.content.Context
 import android.content.Intent
@@ -12,18 +12,19 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
+import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.model.DetailsSectionButton
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
+import com.glowapps.vidify.player.VideoPlayerActivity
 import com.glowapps.vidify.presenter.SectionCardPresenter
 import com.glowapps.vidify.presenter.DeviceCardPresenter
-import com.glowapps.vidify.util.isTV
 
-class MainFragment : BrowseSupportFragment() {
+class MainTVFragment : BrowseSupportFragment() {
     companion object {
-        const val TAG = "MainFragment"
+        const val TAG = "MainTVFragment"
         const val SERVICE_TYPE = "_vidify._tcp."
         const val SERVICE_NAME = "vidify"
         const val SERVICE_PROTOCOL = NsdManager.PROTOCOL_DNS_SD  // DNS-based service discovery
@@ -49,8 +50,12 @@ class MainFragment : BrowseSupportFragment() {
         isHeadersTransitionOnBackEnabled = true
 
         // Initializing the callbacks for the items
-        onItemViewClickedListener = ItemViewClickedListener(activity!!)
-        onItemViewSelectedListener = ItemViewSelectedListener()
+        onItemViewClickedListener =
+            ItemViewClickedListener(
+                activity!!
+            )
+        onItemViewSelectedListener =
+            ItemViewSelectedListener()
 
         // Loading the grid state, trying to reuse the previous one
         if (savedInstanceState == null) {
@@ -90,7 +95,7 @@ class MainFragment : BrowseSupportFragment() {
                 getString(R.string.section_help_title),
                 getString(R.string.section_help_subtitle),
                 getString(R.string.section_help_description),
-                R.drawable.section_help_card,
+                R.drawable.icon_help,
                 R.drawable.qrcode_github,
                 null
             )
@@ -101,8 +106,8 @@ class MainFragment : BrowseSupportFragment() {
                 getString(R.string.section_subscribe_title),
                 getString(R.string.section_subscribe_subtitle),
                 getString(R.string.section_subscribe_description),
-                R.drawable.section_subscribe_card,
-                R.drawable.section_subscribe_card,
+                R.drawable.icon_subscribe,
+                R.drawable.icon_subscribe,
                 arrayListOf(
                     DetailsSectionButton(
                         DetailsSectionButtonAction.SUBSCRIBE,
@@ -117,7 +122,7 @@ class MainFragment : BrowseSupportFragment() {
                 getString(R.string.section_share_title),
                 getString(R.string.section_share_subtitle),
                 getString(R.string.section_share_description),
-                R.drawable.section_share_card,
+                R.drawable.icon_share,
                 R.drawable.qrcode_playstore,
                 null
             )
@@ -136,7 +141,8 @@ class MainFragment : BrowseSupportFragment() {
         Log.i(TAG, "Looking for available devices")
         discoveryListener = DeviceDiscoveryListener(nsdManager!!, ::addService, ::removeService)
         nsdManager!!.discoverServices(
-            SERVICE_TYPE, SERVICE_PROTOCOL, discoveryListener
+            SERVICE_TYPE,
+            SERVICE_PROTOCOL, discoveryListener
         )
     }
 
@@ -216,7 +222,7 @@ class MainFragment : BrowseSupportFragment() {
     private fun removeService(service: NsdServiceInfo) {
         for (i in 0 until deviceAdapter.size()) {
             if ((deviceAdapter[i] as NsdServiceInfo).serviceName == service.serviceName) {
-                Log.i(MainFragment.TAG, "Removed item from deviceAdapter with index $i")
+                Log.i(TAG, "Removed item from deviceAdapter with index $i")
                 deviceAdapter.removeItems(i, 1)
                 break
             }

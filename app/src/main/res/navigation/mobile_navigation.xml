@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_devices">
+
+    <fragment
+        android:id="@+id/nav_devices"
+        android:name="com.glowapps.vidify.mobile.DevicesFragment"
+        android:label="@string/devices_header"
+        tools:layout="@layout/mobile_fragment_devices">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_help"
+        android:name="com.glowapps.vidify.mobile.HelpFragment"
+        android:label="@string/section_help_title"
+        tools:layout="@layout/mobile_fragment_help" />
+
+    <fragment
+        android:id="@+id/nav_subscribe"
+        android:name="com.glowapps.vidify.mobile.SubscribeFragment"
+        android:label="@string/section_subscribe_title"
+        tools:layout="@layout/mobile_fragment_subscribe" />
+
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="com.glowapps.vidify.mobile.ShareFragment" />
+</navigation>

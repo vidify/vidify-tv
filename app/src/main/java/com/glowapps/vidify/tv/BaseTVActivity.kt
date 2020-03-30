@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.tv
 
 import androidx.fragment.app.FragmentActivity
 import android.annotation.SuppressLint
@@ -9,7 +9,7 @@ import android.view.WindowManager
 
 // The base activity class with a bit of customization to force the same TV-like interface in
 // every device.
-open class TVActivity : FragmentActivity() {
+open class BaseTVActivity : FragmentActivity() {
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
