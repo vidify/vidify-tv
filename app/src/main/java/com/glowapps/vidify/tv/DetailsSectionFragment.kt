@@ -1,6 +1,5 @@
 package com.glowapps.vidify.tv
 
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,7 @@ import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.Purchasable
-import com.glowapps.vidify.presenter.DetailsSectionDescriptionPresenter
+import com.glowapps.vidify.tv.presenter.DetailsSectionDescriptionPresenter
 import com.glowapps.vidify.util.share
 
 class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListener {

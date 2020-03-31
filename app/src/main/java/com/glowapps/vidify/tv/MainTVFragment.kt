@@ -19,8 +19,8 @@ import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoveryListener
 import com.glowapps.vidify.player.VideoPlayerActivity
-import com.glowapps.vidify.presenter.SectionCardPresenter
-import com.glowapps.vidify.presenter.DeviceCardPresenter
+import com.glowapps.vidify.tv.presenter.SectionCardPresenter
+import com.glowapps.vidify.tv.presenter.DeviceCardPresenter
 
 class MainTVFragment : BrowseSupportFragment() {
     companion object {

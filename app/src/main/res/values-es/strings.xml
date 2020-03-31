@@ -8,6 +8,7 @@
     <string name="section_help_subtitle">Cómo usar Vidify</string>
     <string name="section_help_description">Necesitarás la app de escritorio Vidify instalada en el ordenador donde se reproduce la música. Ambos dispositivos tienen que estar en la misma red. Puedes leer más sobre cómo instalarlo en la página de GitHub (con el código QR o directamente en https://github.com/vidify/vidify).</string>
     <string name="section_help_button_visit">Visitar</string>
+    <string name="section_help_press_to_open">Pulsa la imagen para redireccionar</string>
     <string name="section_subscribe_title">Obtener app completa</string>
     <string name="section_subscribe_subtitle">Subscríbete para obtener acceso completo</string>
     <string name="section_subscribe_description">Para que sea posible continuar el desarrollo de Vidify, por favor subscríbete. Esto eliminará los mensajes que indican que estás usando una versión de prueba, y te dará acceso a funciones futuras.</string>

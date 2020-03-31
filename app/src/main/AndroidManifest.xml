@@ -1,8 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.glowapps.vidify"
-    android:installLocation="preferExternal"
-    tools:ignore="MissingLeanbackLauncher">
+    android:installLocation="preferExternal" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -23,14 +22,9 @@
         android:logo="@mipmap/logo"
         android:label="@string/app_name">
 
-        <activity android:name=".tv.BaseTVActivity"
-            android:screenOrientation="landscape"
-            tools:ignore="LockedOrientationActivity" />
-
+        <!-- Mobile -->
         <activity
             android:name=".mobile.MainMobileActivity"
-            android:icon="@mipmap/logo"
-            android:logo="@mipmap/logo"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -39,10 +33,13 @@
             </intent-filter>
         </activity>
 
+        <!-- TV -->
+        <activity android:name=".tv.BaseTVActivity"
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".tv.MainTVActivity"
-            android:icon="@mipmap/logo"
-            android:logo="@mipmap/logo"
             android:label="@string/app_name"
             android:theme="@style/Theme.Leanback"
             android:screenOrientation="landscape"
