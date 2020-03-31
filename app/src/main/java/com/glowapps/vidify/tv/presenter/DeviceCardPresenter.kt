@@ -10,7 +10,9 @@ import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.glowapps.vidify.R
-import java.util.*
+import com.glowapps.vidify.nsd.getTitle
+import com.glowapps.vidify.nsd.getDescription
+import com.glowapps.vidify.nsd.getImage
 
 // The CardPresenter generates card views, given their name and other basic attributes.
 class DeviceCardPresenter : Presenter() {
@@ -72,24 +74,9 @@ class DeviceCardPresenter : Presenter() {
         // Setting the card's contents: title, description and image
         val device: NsdServiceInfo = item as NsdServiceInfo
         Log.i(TAG, "refreshing card view for $device")
-        cardView.titleText = device.serviceName
-
-        // By default, the description is the API. If it isn't found, the OS name is used.
-        cardView.contentText = when {
-            device.attributes.containsKey("api") -> device.attributes["api"]!!.toString(Charsets.UTF_8)
-            device.attributes.containsKey("os") -> device.attributes["os"]!!.toString(Charsets.UTF_8)
-            else -> "Unknown device"
-        }
-
-        // The image is obtained with the OS attribute.
-        val image: Int =
-            when (device.attributes["os"]?.toString(Charsets.UTF_8)?.toUpperCase(Locale.ROOT)) {
-                "LINUX" -> R.drawable.os_linux
-                "MACOS" -> R.drawable.os_macos
-                "WINDOWS" -> R.drawable.os_windows
-                "BSD" -> R.drawable.os_bsd
-                else -> R.drawable.os_unknown
-            }
+        cardView.titleText = getTitle(device)
+        cardView.contentText = getDescription(device)
+        val image = getImage(device)
 
         // Adding the image with Glide so that it will be cached.
         Glide.with(cardView.context)

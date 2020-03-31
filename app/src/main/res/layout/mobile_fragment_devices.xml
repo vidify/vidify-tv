@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- Empty view for the RecyclerView -->
     <LinearLayout
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
@@ -23,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:alpha="0.4"
-            android:src="@drawable/arrow_up_left" />
+            android:src="@drawable/arrow_up_left"
+            android:contentDescription="arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +35,5 @@
             android:textColor="@android:color/darker_gray"
             android:textSize="18sp"
             android:textStyle="italic" />
-
     </LinearLayout>
-
 </RelativeLayout>

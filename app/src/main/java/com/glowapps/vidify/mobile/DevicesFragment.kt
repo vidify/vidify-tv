@@ -1,5 +1,6 @@
 package com.glowapps.vidify.mobile
 
+import android.content.Intent
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.os.Handler
@@ -8,22 +9,28 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.glowapps.vidify.R
 import com.glowapps.vidify.mobile.presenter.DeviceCardAdapter
 import com.glowapps.vidify.nsd.DeviceDiscoverySystem
+import com.glowapps.vidify.player.VideoPlayerActivity
 import com.glowapps.vidify.tv.MainTVFragment
 
 
-class DevicesFragment : Fragment() {
+class DevicesFragment : Fragment(), DeviceCardAdapter.ItemClickListener {
+    companion object {
+        private const val TAG = "DevicesFragment"
+    }
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyView: LinearLayout
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewAdapter: DeviceCardAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var discoverySystem: DeviceDiscoverySystem? = null
@@ -38,6 +45,7 @@ class DevicesFragment : Fragment() {
 
         viewManager = LinearLayoutManager(activity!!)
         viewAdapter = DeviceCardAdapter()
+        viewAdapter.setClickListener(this)
 
         recyclerView = root.findViewById<RecyclerView>(R.id.devices_recycler_view).apply {
             // use this setting to improve performance if you know that changes
@@ -50,6 +58,14 @@ class DevicesFragment : Fragment() {
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
+
+        // TEST TODO REMOVE
+        val test = NsdServiceInfo(). apply  {
+            serviceName = "TEST NAME"
+            serviceType = "test service type"
+            setAttribute("os", "Linux")
+        }
+        viewAdapter.add(test)
 
         return root
     }
@@ -64,7 +80,7 @@ class DevicesFragment : Fragment() {
     override fun onPause() {
         Log.d(MainTVFragment.TAG, "Pausing fragment")
         discoverySystem!!.stop()
-        // deviceAdapter.clear()
+        viewAdapter.clear()
 
         super.onPause()
     }
@@ -83,9 +99,20 @@ class DevicesFragment : Fragment() {
         emptyView.visibility = previous
     }
 
+    // When one of the cards is clicked, its video activity starts.
+    override fun onItemClick(view: View?, position: Int) {
+        val device = viewAdapter.elements[position]
+        Log.i(TAG, "Item clicked: '${device.serviceName}', number $position")
+
+        val intent = Intent(activity, VideoPlayerActivity::class.java).apply {
+            putExtra(VideoPlayerActivity.DEVICE_ARG, device)
+        }
+        ContextCompat.startActivity(activity!!, intent, null)
+    }
+
     private fun addService(service: NsdServiceInfo) {
         Handler(Looper.getMainLooper()).post {
-            // deviceAdapter.add(service)
+            viewAdapter.add(service)
         }
     }
 
@@ -93,13 +120,13 @@ class DevicesFragment : Fragment() {
     // from the GUI too.
     private fun removeService(service: NsdServiceInfo) {
         Handler(Looper.getMainLooper()).post {
-            // for (i in 0 until deviceAdapter.size()) {
-            //     if ((deviceAdapter[i] as NsdServiceInfo).serviceName == service.serviceName) {
-            //         Log.i(MainTVFragment.TAG, "Removed item from deviceAdapter with index $i")
-            //         deviceAdapter.removeItems(i, 1)
-            //         break
-            //     }
-            // }
+            for (i in viewAdapter.elements.indices) {
+                if ((viewAdapter.elements[i]).serviceName == service.serviceName) {
+                    Log.i(MainTVFragment.TAG, "Removed item from deviceAdapter with index $i")
+                    viewAdapter.remove(i)
+                    break
+                }
+            }
         }
     }
 }
