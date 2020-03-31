@@ -48,8 +48,6 @@ class MainTVFragment : BrowseSupportFragment() {
             ItemViewClickedListener(
                 activity!!
             )
-        onItemViewSelectedListener =
-            ItemViewSelectedListener()
 
         // Loading the grid state, trying to reuse the previous one
         if (savedInstanceState == null) {
@@ -177,20 +175,10 @@ class MainTVFragment : BrowseSupportFragment() {
         }
     }
 
-    // The ItemViewSelectedListener is empty, because nothing should happen in this case.
-    private class ItemViewSelectedListener : OnItemViewSelectedListener {
-        override fun onItemSelected(
-            itemViewHolder: Presenter.ViewHolder?, item: Any?,
-            rowViewHolder: RowPresenter.ViewHolder?, row: Row?
-        ) {
-        }
-    }
-
     private fun addService(service: NsdServiceInfo) {
-        // The new device found is added as a card in the grid. The UI can
-        // only be modified within the main thread.
+        // The new device found is added as a card in the grid. The UI can only be modified within
+        // the main thread.
         Handler(Looper.getMainLooper()).post {
-            // code goes here
             deviceAdapter.add(service)
         }
     }
