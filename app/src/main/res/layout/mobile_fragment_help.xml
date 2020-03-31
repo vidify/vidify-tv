@@ -15,7 +15,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_help_description"
-            android:layout_margin="30dp"
+            android:layout_margin="15dp"
             android:textSize="20sp" />
 
         <TextView

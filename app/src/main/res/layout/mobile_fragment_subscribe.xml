@@ -15,14 +15,14 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_subscribe_description"
-            android:layout_margin="30dp"
+            android:layout_margin="15dp"
             android:textSize="20sp" />
 
         <Button
             android:id="@+id/subscribe_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="15dp"
             android:drawableStart="@drawable/icon_subscribe_small"
             android:text="@string/section_subscribe_button"
             android:textSize="18sp"
