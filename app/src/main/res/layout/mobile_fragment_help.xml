@@ -11,7 +11,7 @@
         tools:context=".mobile.HelpFragment">
 
         <TextView
-            android:id="@+id/help"
+            android:id="@+id/help_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_help_description"

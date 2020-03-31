@@ -13,6 +13,7 @@
     <string name="section_subscribe_subtitle">Subscríbete para obtener acceso completo</string>
     <string name="section_subscribe_description">Para que sea posible continuar el desarrollo de Vidify, por favor subscríbete. Esto eliminará los mensajes que indican que estás usando una versión de prueba, y te dará acceso a funciones futuras.</string>
     <string name="section_subscribe_button">Donar 1€</string>
+    <string name="section_subscribe_button_disabled">Ya estás subscrito</string>
     <string name="section_share_title">Compartir</string>
     <string name="section_share_subtitle">Usa este código QR para compartir Vidify TV</string>
     <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo al proyecto en GitHub en http://github.com/vidify/vidify</string>

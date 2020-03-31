@@ -2,5 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Here would go the top right options menu, currently empty. -->
+    <item
+        android:id="@+id/share_button"
+        android:title=""
+        app:showAsAction="always"
+        android:icon="@drawable/icon_share_small" />
 </menu>

@@ -16,9 +16,5 @@
             android:id="@+id/nav_subscribe"
             android:icon="@drawable/icon_subscribe"
             android:title="@string/section_subscribe_title" />
-        <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/icon_share"
-            android:title="@string/section_share_title" />
     </group>
 </menu>
