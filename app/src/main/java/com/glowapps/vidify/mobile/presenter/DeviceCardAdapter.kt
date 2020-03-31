@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,13 +15,16 @@ import com.glowapps.vidify.nsd.getImage
 import com.glowapps.vidify.nsd.getTitle
 import kotlinx.android.synthetic.main.mobile_device_card.view.*
 
-
-class DeviceCardAdapter : RecyclerView.Adapter<DeviceCardAdapter.CardViewHolder>() {
+// Requires two callbacks for whenever the view is set to empty or not.
+class DeviceCardAdapter(
+    private val viewEmpty: () -> Unit,
+    private val viewNotEmpty: () -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TAG = "DeviceCardAdapter"
     }
 
-    val elements = mutableListOf<NsdServiceInfo>()
+    val devices = mutableListOf<NsdServiceInfo>()
     private var clickListener: ItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -31,11 +33,11 @@ class DeviceCardAdapter : RecyclerView.Adapter<DeviceCardAdapter.CardViewHolder>
         return CardViewHolder(cardView)
     }
 
-    override fun getItemCount() = elements.size
+    override fun getItemCount() = devices.size
 
-    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        val view = holder.cardView!!
-        val device = elements[position]
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val view = (holder as CardViewHolder).cardView!!
+        val device = devices[position]
         Log.i(TAG, "Binding new device: ${device.serviceName}")
 
         view.card_title.text = getTitle(device)
@@ -47,30 +49,36 @@ class DeviceCardAdapter : RecyclerView.Adapter<DeviceCardAdapter.CardViewHolder>
     }
 
     fun add(service: NsdServiceInfo) {
-        Log.i(TAG, "Adding new service: $service")
-        elements.add(service)
-        notifyItemInserted(elements.size - 1)
+        Log.i(TAG, "Adding new service: ${service.serviceName}")
+        // If the first device is added, the empty view will be hidden
+        if (devices.size == 0) {
+            viewNotEmpty()
+        }
+        devices.add(service)
+        notifyDataSetChanged()
     }
 
     fun remove(i: Int) {
         Log.i(TAG, "Removing service: $i")
-        elements.removeAt(i)
-        notifyItemRemoved(i)
+        devices.removeAt(i)
+        if (devices.size == 0) {
+            viewEmpty()
+        }
+        notifyDataSetChanged()
     }
 
     fun clear() {
         Log.i(TAG, "Clearing all services")
-        elements.clear()
+        devices.clear()
+        viewEmpty()
         notifyDataSetChanged()
     }
 
     fun setClickListener(listener: ItemClickListener) {
         this.clickListener = listener
-        notifyDataSetChanged()
     }
 
-    inner class CardViewHolder(view: CardView) : RecyclerView.ViewHolder(view),
-            View.OnClickListener {
+    inner class CardViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
         var cardView: CardView? = null
 

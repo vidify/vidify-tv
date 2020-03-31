@@ -9,9 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +29,6 @@ class DevicesFragment : Fragment(), DeviceCardAdapter.ItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyView: LinearLayout
     private lateinit var viewAdapter: DeviceCardAdapter
-    private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var discoverySystem: DeviceDiscoverySystem? = null
 
@@ -43,29 +40,13 @@ class DevicesFragment : Fragment(), DeviceCardAdapter.ItemClickListener {
         val root = inflater.inflate(R.layout.mobile_fragment_devices, container, false)
         emptyView = root.findViewById(R.id.empty_view) as LinearLayout
 
-        viewManager = LinearLayoutManager(activity!!)
-        viewAdapter = DeviceCardAdapter()
+        viewAdapter = DeviceCardAdapter(::hideEmptyView, ::showEmptyView)
         viewAdapter.setClickListener(this)
 
         recyclerView = root.findViewById<RecyclerView>(R.id.devices_recycler_view).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-
-            // use a linear layout manager
-            layoutManager = viewManager
-
-            // specify an viewAdapter (see also next example)
+            layoutManager = LinearLayoutManager(activity!!)
             adapter = viewAdapter
         }
-
-        // TEST TODO REMOVE
-        val test = NsdServiceInfo(). apply  {
-            serviceName = "TEST NAME"
-            serviceType = "test service type"
-            setAttribute("os", "Linux")
-        }
-        viewAdapter.add(test)
 
         return root
     }
@@ -92,16 +73,18 @@ class DevicesFragment : Fragment(), DeviceCardAdapter.ItemClickListener {
         discoverySystem!!.start()
     }
 
-    // Toggle the empty view visibility. It starts visible.
-    private fun toggleEmptyView() {
-        val previous = recyclerView.visibility
-        recyclerView.visibility = emptyView.visibility
-        emptyView.visibility = previous
+    private fun hideEmptyView() {
+        recyclerView.visibility = View.GONE
+        emptyView.visibility = View.VISIBLE
+    }
+    private fun showEmptyView() {
+        recyclerView.visibility = View.VISIBLE
+        emptyView.visibility = View.GONE
     }
 
     // When one of the cards is clicked, its video activity starts.
     override fun onItemClick(view: View?, position: Int) {
-        val device = viewAdapter.elements[position]
+        val device = viewAdapter.devices[position]
         Log.i(TAG, "Item clicked: '${device.serviceName}', number $position")
 
         val intent = Intent(activity, VideoPlayerActivity::class.java).apply {
@@ -120,8 +103,8 @@ class DevicesFragment : Fragment(), DeviceCardAdapter.ItemClickListener {
     // from the GUI too.
     private fun removeService(service: NsdServiceInfo) {
         Handler(Looper.getMainLooper()).post {
-            for (i in viewAdapter.elements.indices) {
-                if ((viewAdapter.elements[i]).serviceName == service.serviceName) {
+            for (i in viewAdapter.devices.indices) {
+                if ((viewAdapter.devices[i]).serviceName == service.serviceName) {
                     Log.i(MainTVFragment.TAG, "Removed item from deviceAdapter with index $i")
                     viewAdapter.remove(i)
                     break

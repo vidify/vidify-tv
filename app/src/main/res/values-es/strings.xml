@@ -4,7 +4,7 @@
     <string name="devices_header">Dispositivos</string>
     <string name="more_header">Más</string>
     <string name="demo_message">Demo de Vidify TV</string>
-    <string name="no_devices_found">No se encontaron dispositivos Vidify en tu red. Si no sabes cómo hacerlo, échale un ojo a la sección de Ayuda!</string>
+    <string name="no_devices_found">No se encontaron dispositivos Vidify en tu red. Si no sabes cómo hacerlo, échale un ojo a la sección de Ayuda! Esta lista se refresca automáticamente.</string>
     <string name="section_help_title">Ayuda</string>
     <string name="section_help_subtitle">Cómo usar Vidify</string>
     <string name="section_help_description">Necesitarás la app de escritorio Vidify instalada en el ordenador donde se reproduce la música. Ambos dispositivos tienen que estar en la misma red. Puedes leer más sobre cómo instalarlo en la página de GitHub (con el código QR o directamente en https://github.com/vidify/vidify).</string>
