@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.player
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
@@ -6,8 +6,9 @@ import android.util.JsonReader
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.Purchase
+import com.glowapps.vidify.tv.BaseTVActivity
+import com.glowapps.vidify.billing.BillingSystem
+import com.glowapps.vidify.R
 import com.glowapps.vidify.model.Message
 import com.glowapps.vidify.model.Purchasable
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -15,13 +16,12 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import org.w3c.dom.Text
 import java.io.InputStreamReader
 import java.net.Socket
 import java.net.SocketException
 
 
-class VideoPlayerActivity : TVActivity() {
+class VideoPlayerActivity : BaseTVActivity() {
     companion object {
         const val TAG = "VideoPlayerActivity"
         const val DEVICE_ARG = "device_arg"

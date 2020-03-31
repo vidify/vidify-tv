@@ -1,6 +1,5 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.tv
 
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -8,11 +7,13 @@ import androidx.core.content.ContextCompat
 import androidx.leanback.app.DetailsSupportFragment
 import androidx.leanback.app.DetailsSupportFragmentBackgroundController
 import androidx.leanback.widget.*
-import com.android.billingclient.api.*
+import com.glowapps.vidify.billing.BillingSystem
+import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.Purchasable
-import com.glowapps.vidify.presenter.DetailsSectionDescriptionPresenter
+import com.glowapps.vidify.tv.presenter.DetailsSectionDescriptionPresenter
+import com.glowapps.vidify.util.share
 
 class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListener {
     companion object {
@@ -55,7 +56,8 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
             val options = BitmapFactory.Options()
             options.inScaled = false
             coverBitmap =
-                BitmapFactory.decodeResource(resources, R.drawable.background, options)
+                BitmapFactory.decodeResource(resources,
+                    R.drawable.background, options)
         }
 
         // Setting the elements given the DetailsSection data
@@ -103,17 +105,7 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
             DetailsSectionButtonAction.SHARE.id -> {
                 // Sharing on a television will open an activity with a QR code and more
                 // details. On Android, the standard share menu will be shown.
-                Intent(Intent.ACTION_SEND).apply {
-                    putExtra(
-                        Intent.EXTRA_SUBJECT,
-                        activity!!.getString(R.string.app_name)
-                    )
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        activity!!.getString(R.string.playstore_link)
-                    )
-                    type = "text/plain"
-                }
+                share(activity!!)
             }
             else -> {
                 Log.e(TAG, "Unknown action ID: ${action.id}")

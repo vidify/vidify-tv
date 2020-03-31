@@ -1,10 +1,11 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.tv
 
 import android.os.Bundle
 import android.util.Log
+import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
 
-class DetailsSectionActivity : TVActivity() {
+class DetailsSectionActivity : BaseTVActivity() {
     companion object {
         const val TAG = "DetailsSectionActivity"
         const val DATA_INTENT_ARG = "data_intent_arg"
@@ -12,7 +13,7 @@ class DetailsSectionActivity : TVActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.details_fragment)
+        setContentView(R.layout.tv_details_fragment)
 
         if (savedInstanceState == null) {
             Log.i(TAG, "Passing section parameters to the section fragment")

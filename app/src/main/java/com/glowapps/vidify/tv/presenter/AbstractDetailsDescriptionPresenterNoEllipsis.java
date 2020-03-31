@@ -1,4 +1,4 @@
-package com.glowapps.vidify.presenter;
+package com.glowapps.vidify.tv.presenter;
 
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetricsInt;

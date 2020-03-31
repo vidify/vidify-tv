@@ -1,4 +1,4 @@
-package com.glowapps.vidify
+package com.glowapps.vidify.billing
 
 import android.app.Activity
 import android.content.Context

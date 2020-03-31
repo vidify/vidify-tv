@@ -1,4 +1,4 @@
-package com.glowapps.vidify.presenter
+package com.glowapps.vidify.tv.presenter
 
 import android.animation.ObjectAnimator
 import android.graphics.drawable.Drawable

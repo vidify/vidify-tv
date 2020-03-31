@@ -1,8 +1,8 @@
-package com.glowapps.vidify.presenter
+package com.glowapps.vidify.tv.presenter
 
 import com.glowapps.vidify.model.DetailsSection
 
-class DetailsSectionDescriptionPresenter : AbstractDetailsDescriptionPresenterNoEllipsis () {
+class DetailsSectionDescriptionPresenter : AbstractDetailsDescriptionPresenterNoEllipsis() {
     override fun onBindDescription(viewHolder: ViewHolder, item: Any) {
         val data = item as DetailsSection
         viewHolder.apply {
