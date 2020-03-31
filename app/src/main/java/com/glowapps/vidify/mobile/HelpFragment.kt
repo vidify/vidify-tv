@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.glowapps.vidify.R
-import com.glowapps.vidify.util.openURL
 
 class HelpFragment : Fragment() {
     override fun onCreateView(

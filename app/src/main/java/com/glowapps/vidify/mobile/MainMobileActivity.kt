@@ -18,7 +18,6 @@ import com.glowapps.vidify.util.openURL
 import com.glowapps.vidify.util.share
 import com.google.android.material.navigation.NavigationView
 
-
 class MainMobileActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "MainMobileActivity"
@@ -64,7 +63,8 @@ class MainMobileActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    // Method called when the GitHub help button is pressed
+    // Callback for XML files with the GitHub URL
+    @Suppress("UNUSED_PARAMETER")
     fun redirectGitHub(view: View) {
         openURL(this, getString(R.string.github_link))
     }
