@@ -1,6 +1,5 @@
 package com.glowapps.vidify.tv
 
-import android.content.Context
 import android.content.Intent
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
@@ -17,7 +16,7 @@ import com.glowapps.vidify.model.DetailsSection
 import com.glowapps.vidify.model.DetailsSectionButton
 import com.glowapps.vidify.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.DetailsSectionCard
-import com.glowapps.vidify.nsd.DeviceDiscoveryListener
+import com.glowapps.vidify.nsd.DeviceDiscoverySystem
 import com.glowapps.vidify.player.VideoPlayerActivity
 import com.glowapps.vidify.tv.presenter.SectionCardPresenter
 import com.glowapps.vidify.tv.presenter.DeviceCardPresenter
@@ -25,21 +24,16 @@ import com.glowapps.vidify.tv.presenter.DeviceCardPresenter
 class MainTVFragment : BrowseSupportFragment() {
     companion object {
         const val TAG = "MainTVFragment"
-        const val SERVICE_TYPE = "_vidify._tcp."
-        const val SERVICE_NAME = "vidify"
-        const val SERVICE_PROTOCOL = NsdManager.PROTOCOL_DNS_SD  // DNS-based service discovery
     }
 
     // Bigger adapter to hold all rows
     private lateinit var rowsAdapter: ArrayObjectAdapter
-
     // Row adapter for the devices in the network
     private lateinit var deviceAdapter: ArrayObjectAdapter
-
     // Row with other cards, like settings, disabling ads, help...
     private lateinit var sectionAdapter: ArrayObjectAdapter
-    private var nsdManager: NsdManager? = null
-    private var discoveryListener: DeviceDiscoveryListener? = null
+
+    private var discoverySystem: DeviceDiscoverySystem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,25 +126,9 @@ class MainTVFragment : BrowseSupportFragment() {
 
     override fun onStart() {
         // Initializing the network service discovery
-        nsdManager = activity!!.getSystemService(Context.NSD_SERVICE) as NsdManager
+        discoverySystem = DeviceDiscoverySystem(activity!!, ::addService, ::removeService)
 
         super.onStart()
-    }
-
-    private fun startDiscovery() {
-        Log.i(TAG, "Looking for available devices")
-        discoveryListener = DeviceDiscoveryListener(nsdManager!!, ::addService, ::removeService)
-        nsdManager!!.discoverServices(
-            SERVICE_TYPE,
-            SERVICE_PROTOCOL, discoveryListener
-        )
-    }
-
-    private fun stopDiscovery() {
-        if (discoveryListener != null) {
-            nsdManager!!.stopServiceDiscovery(discoveryListener)
-        }
-        discoveryListener = null
     }
 
     // On pause, the discovery listener will be stopped. Thus, the current devices inside
@@ -158,17 +136,17 @@ class MainTVFragment : BrowseSupportFragment() {
     // cleared out.
     override fun onPause() {
         Log.d(TAG, "Pausing fragment")
-        stopDiscovery()
+        discoverySystem!!.stop()
         deviceAdapter.clear()
 
         super.onPause()
     }
 
     override fun onResume() {
+        Log.d(TAG, "Resuming fragment")
         super.onResume()
 
-        Log.d(TAG, "Resuming fragment")
-        startDiscovery()
+        discoverySystem!!.start()
     }
 
     private class ItemViewClickedListener(private val activity: FragmentActivity) :
@@ -220,11 +198,13 @@ class MainTVFragment : BrowseSupportFragment() {
     // When a service is lost, every widget in the adapter has to be checked to remove it
     // from the GUI too.
     private fun removeService(service: NsdServiceInfo) {
-        for (i in 0 until deviceAdapter.size()) {
-            if ((deviceAdapter[i] as NsdServiceInfo).serviceName == service.serviceName) {
-                Log.i(TAG, "Removed item from deviceAdapter with index $i")
-                deviceAdapter.removeItems(i, 1)
-                break
+        Handler(Looper.getMainLooper()).post {
+            for (i in 0 until deviceAdapter.size()) {
+                if ((deviceAdapter[i] as NsdServiceInfo).serviceName == service.serviceName) {
+                    Log.i(TAG, "Removed item from deviceAdapter with index $i")
+                    deviceAdapter.removeItems(i, 1)
+                    break
+                }
             }
         }
     }
