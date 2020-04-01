@@ -10,8 +10,8 @@ android {
         applicationId "com.glowapps.vidify"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 8
-        versionName "0.4.0"
+        versionCode 9
+        versionName "0.4.1"
     }
 
     buildTypes {
