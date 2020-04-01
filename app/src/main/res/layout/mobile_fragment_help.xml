@@ -28,7 +28,7 @@
             android:textStyle="italic" />
 
         <ImageView
-            android:id="@+id/qrcode"
+            android:id="@+id/github_qrcode"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_margin="20dp"
@@ -36,7 +36,6 @@
             android:src="@drawable/qrcode_github"
             android:clickable="true"
             android:autoLink="web"
-            android:onClick="redirectGitHub"
             android:contentDescription="QR code"
             android:focusable="true" />
 

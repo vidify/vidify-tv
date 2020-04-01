@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -53,19 +52,14 @@ class MainMobileActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    // Action bar items
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.share_button -> share(this)
+            R.id.github_qrcode -> openURL(this, getString(R.string.github_link))
+            R.id.twitter_button -> openURL(this, getString(R.string.twitter_link))
             else -> Log.e(TAG, "Unknown options item selected: ${item.itemId}")
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    // Callback for XML files with the GitHub URL
-    @Suppress("UNUSED_PARAMETER")
-    fun redirectGitHub(view: View) {
-        openURL(this, getString(R.string.github_link))
     }
 }

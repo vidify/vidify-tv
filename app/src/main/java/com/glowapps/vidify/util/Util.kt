@@ -1,11 +1,14 @@
 package com.glowapps.vidify.util
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import com.glowapps.vidify.R
+
 
 fun share(activity: Activity) {
     val intent = Intent(Intent.ACTION_SEND).apply {
@@ -24,6 +27,6 @@ fun share(activity: Activity) {
 
 fun openURL(context: Context, url: String) {
     val uriUrl: Uri = Uri.parse(url)
-    val launchBrowser = Intent(Intent.ACTION_VIEW, uriUrl)
-    startActivity(context, launchBrowser, null)
+    val intent = Intent(Intent.ACTION_VIEW, uriUrl)
+    startActivity(context, intent, null)
 }

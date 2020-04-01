@@ -3,8 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/twitter_button"
+        android:title=""
+        android:contentDescription="Twitter"
+        app:showAsAction="always"
+        android:icon="@drawable/icon_twitter_small" />
+
+    <item
         android:id="@+id/share_button"
         android:title=""
+        android:contentDescription="@string/section_share_title"
         app:showAsAction="always"
         android:icon="@drawable/icon_share_small" />
 </menu>

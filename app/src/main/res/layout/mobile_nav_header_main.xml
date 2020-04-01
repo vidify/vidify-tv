@@ -16,11 +16,12 @@
         android:id="@+id/navbar_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/email"
+        android:contentDescription="@string/app_name"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         app:srcCompat="@mipmap/logo" />
 
     <TextView
+        android:id="@+id/navbar_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
@@ -28,9 +29,11 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/navbar_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/email" />
-
+        android:text="@string/email"
+        android:autoLink="email"
+        android:clickable="true"
+        android:focusable="true" />
 </LinearLayout>

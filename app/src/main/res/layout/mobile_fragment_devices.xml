@@ -32,7 +32,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="@string/no_devices_found"
-            android:textColor="@android:color/darker_gray"
             android:textSize="18sp"
             android:textStyle="italic" />
     </LinearLayout>
