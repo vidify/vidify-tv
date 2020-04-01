@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.core.content.ContextCompat.startActivity
 import com.glowapps.vidify.R
 
-
 fun share(activity: Activity) {
     val intent = Intent(Intent.ACTION_SEND).apply {
         putExtra(

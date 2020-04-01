@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
+import com.g00fy2.versioncompare.Version
 
 // Abstraction system to manage the services found and lost with NDS. Contains two callbacks, one
 // called when a new service is found, and another called when a service is lost.
@@ -19,6 +20,9 @@ class DeviceDiscoverySystem(
         const val SERVICE_TYPE = "_vidify._tcp."
         const val SERVICE_NAME = "vidify"
         const val SERVICE_PROTOCOL = NsdManager.PROTOCOL_DNS_SD  // DNS-based service discovery
+        // Vidify server versions required
+        const val MIN_VERSION = "2.2.0"
+        const val MAX_VERSION = "2.3.0"
     }
 
     private var nsdManager: NsdManager = activity.getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -43,15 +47,19 @@ class DeviceDiscoverySystem(
 
     override fun onServiceFound(service: NsdServiceInfo) {
         Log.i(TAG, "Service discovery success: ${service.serviceName}")
-        when {
-            service.serviceName.contains(SERVICE_NAME) -> {
-                Log.i(TAG, "Resolving service: $SERVICE_NAME")
-                nsdManager.resolveService(service, DeviceResolveListener())
-            }
-            service.serviceType != SERVICE_TYPE ->
-                Log.e(TAG, "Unknown Service Type: ${service.serviceType}")
-            else -> Log.e(TAG, "Name didn't match")
+
+        if (service.serviceType != SERVICE_TYPE) {
+            Log.e(TAG, "Unknown Service Type: ${service.serviceType}")
+            return
         }
+
+        if (!service.serviceName.contains(SERVICE_NAME)) {
+            Log.e(TAG, "Name doesn't match: ${service.serviceName}")
+            return
+        }
+
+        Log.i(TAG, "Resolving service: ${service.serviceName}")
+        nsdManager.resolveService(service, DeviceResolveListener())
     }
 
     override fun onServiceLost(lost: NsdServiceInfo) {
@@ -78,10 +86,36 @@ class DeviceDiscoverySystem(
             Log.e(TAG, "Resolve failed: $errorCode")
         }
 
-        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-            Log.i(TAG, "Resolve succeeded: ${serviceInfo.serviceName}")
+        override fun onServiceResolved(service: NsdServiceInfo) {
+            Log.i(TAG, "Resolve succeeded: ${service.serviceName}")
 
-            foundService(serviceInfo)
+            // TODO use disabled card with fail callback, see issue #14
+            if (!versionCheck(service)) {
+                return
+            }
+
+            foundService(service)
+        }
+
+        private fun versionCheck(service: NsdServiceInfo): Boolean {
+            if (!service.attributes.containsKey("version")) {
+                Log.e(TAG, "Version not included in service data")
+                return false
+            }
+
+            val version: String = service.attributes["version"]!!.toString(Charsets.UTF_8)
+
+            if (!Version(version).isAtLeast(MIN_VERSION)) {
+                Log.e(TAG, "Vidify version isn't new enough: $version, required >= $MIN_VERSION")
+                return false
+            }
+
+            if (!Version(version).isLowerThan(MAX_VERSION)) {
+                Log.e(TAG, "Vidify version isn't supported: $version, required < $MAX_VERSION")
+                return false
+            }
+
+            return true
         }
     }
 }

@@ -2,23 +2,19 @@ package com.glowapps.vidify.player
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import android.util.JsonReader
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import com.glowapps.vidify.tv.BaseTVActivity
-import com.glowapps.vidify.billing.BillingSystem
 import com.glowapps.vidify.R
+import com.glowapps.vidify.billing.BillingSystem
 import com.glowapps.vidify.model.Message
 import com.glowapps.vidify.model.Purchasable
+import com.glowapps.vidify.tv.BaseTVActivity
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import java.io.InputStreamReader
-import java.net.Socket
-import java.net.SocketException
 
 
 class VideoPlayerActivity : BaseTVActivity() {
@@ -34,24 +30,23 @@ class VideoPlayerActivity : BaseTVActivity() {
 
     private lateinit var billingSystem: BillingSystem
 
-    private lateinit var listenerThread: Thread
-    private lateinit var listenerRunnable: Listener
+    private lateinit var connectionThread: Thread
+    private lateinit var connectionRunnable: VidifyConnection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.video_player_fragment)
         device = intent.getParcelableExtra(DEVICE_ARG)!!
 
-        initBillingSystem()
         // The button has to be modified before its layout is inflated for the player
         toggleDemoMessage()
         initPlayer()
-        startListenerThread()
+        startConnectionThread()
     }
 
     override fun onDestroy() {
         Log.d(TAG, "Destroyed")
-        listenerRunnable.disconnect()
+        connectionRunnable.disconnect()
 
         super.onDestroy()
     }
@@ -60,11 +55,8 @@ class VideoPlayerActivity : BaseTVActivity() {
         Log.d(TAG, "Resuming fragment")
         // If the thread had enough time to die, it's restarted. Otherwise, the previous state
         // is restored (since the YouTube player is paused after onResume always).
-        if (!listenerThread.isAlive) {
-            // Establishing the connection with Vidify again.
-            listenerRunnable = Listener()
-            listenerThread = Thread(listenerRunnable)
-            listenerThread.start()
+        if (!connectionThread.isAlive) {
+            startConnectionThread()
         }
 
         super.onResume()
@@ -73,15 +65,15 @@ class VideoPlayerActivity : BaseTVActivity() {
     override fun onPause() {
         Log.d(TAG, "Pausing fragment")
         // Disconnecting with the Vidify server and stopping its thread.
-        listenerRunnable.disconnect()
+        connectionRunnable.disconnect()
 
         super.onPause()
     }
 
-    private fun startListenerThread() {
-        listenerRunnable = Listener()
-        listenerThread = Thread(listenerRunnable)
-        listenerThread.start()
+    private fun startConnectionThread() {
+        connectionRunnable = VidifyConnection(device, ::startVideo, ::updateVideo)
+        connectionThread = Thread(connectionRunnable)
+        connectionThread.start()
     }
 
     private fun initPlayer() {
@@ -98,28 +90,16 @@ class VideoPlayerActivity : BaseTVActivity() {
             }
         })
         youTubePlayerView.enterFullScreen()
-        muteVideo()
-    }
-
-    private fun initBillingSystem() {
-        billingSystem = BillingSystem(this)
+        muteVideo(true)
     }
 
     private fun toggleDemoMessage() {
+        billingSystem = BillingSystem(this)
         // If the full app is purchased the demo message will be removed
         if (billingSystem.isActive(Purchasable.SUBSCRIBE)) {
             val msg: TextView = findViewById(R.id.demo_message)
             msg.visibility = View.INVISIBLE
         }
-    }
-
-    private fun getYouTubeID(url: String): String? {
-        val match = youtubeIDRegex.find(url)
-        if (match != null) {
-            return match.groupValues[2]
-        }
-
-        return null
     }
 
     // Start playing a new video from the message's url, and with its attributes
@@ -163,6 +143,7 @@ class VideoPlayerActivity : BaseTVActivity() {
                 if (msg.absolutePos != null) {
                     youTubePlayer.seekTo(msg.absolutePos!!.toFloat() / 1000F)
                 } else if (msg.relativePos != null) {
+                    // TODO this can probably be improved
                     val tracker = YouTubePlayerTracker()
                     youTubePlayer.addListener(tracker)
                     youTubePlayer.seekTo(tracker.currentSecond + msg.relativePos!!.toFloat() / 1000F)
@@ -180,102 +161,24 @@ class VideoPlayerActivity : BaseTVActivity() {
     }
 
     @Synchronized
-    fun muteVideo() {
+    fun muteVideo(mute: Boolean) {
         youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
             override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.mute()
+                if (mute) {
+                    youTubePlayer.mute()
+                } else {
+                    youTubePlayer.unMute()
+                }
             }
         })
     }
 
-    @Synchronized
-    fun unMuteVideo() {
-        youTubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.unMute()
-            }
-        })
-    }
-
-    private inner class Listener : Runnable {
-        private lateinit var socket: Socket
-        private var curVideo: String? = null
-        private var isPlaying: Boolean? = null
-
-        override fun run() {
-            try {
-                connect()
-            } catch (e: java.lang.Exception) {
-                Log.e(TAG, "Failed to connect to socket: $e")
-                e.printStackTrace()
-                return
-            }
-
-            val jsonInput = JsonReader(InputStreamReader(socket.getInputStream(), "utf-8"))
-            jsonInput.isLenient = true  // More tolerable JSON parser
-            while (true) {
-                try {
-                    // Obtaining the message and parsing it. If the received URL is the same as the
-                    // one currently playing, the video is updated. Otherwise, a new one starts
-                    // playing with its properties.
-                    val msg = readMessage(jsonInput)
-                    if (msg.url == curVideo) {
-                        updateVideo(msg)
-                    } else {
-                        startVideo(msg)
-                        curVideo = msg.url
-                    }
-                    if (msg.isPlaying != null) {
-                        isPlaying = msg.isPlaying!!
-                    }
-                } catch (e: SocketException) {
-                    // A disconnection was performed outside this thread.
-                    Log.i(TAG, "Stopping client thread")
-                    return
-                } catch (e: Exception) {
-                    // Unexpected error
-                    e.printStackTrace()
-                    disconnect()
-                    return
-                }
-            }
+    private fun getYouTubeID(url: String): String? {
+        val match = youtubeIDRegex.find(url)
+        if (match != null) {
+            return match.groupValues[2]
         }
 
-        private fun connect() {
-            Log.i(TAG, "Connecting to the device in the Listener thread: $device")
-            socket = Socket(device.host, device.port)
-        }
-
-        @Synchronized
-        fun disconnect() {
-            Log.i(TAG, "Disconnecting")
-            socket.close()
-        }
-
-        private fun readMessage(input: JsonReader): Message {
-            Log.i(TAG, "Starting message parse")
-            var url: String? = null
-            var absolutePos: Int? = null
-            var relativePos: Int? = null
-            var isPlaying: Boolean? = null
-
-            input.beginObject()
-            while (input.hasNext()) {
-                when (val name = input.nextName()) {
-                    "url" -> url = input.nextString()
-                    "absolute_pos" -> absolutePos = input.nextInt()
-                    "relative_pos" -> relativePos = input.nextInt()
-                    "is_playing" -> isPlaying = input.nextBoolean()
-                    else -> {
-                        Log.e(TAG, "Unexpected parameter in JSON message: $name")
-                        input.skipValue()
-                    }
-                }
-            }
-            input.endObject()
-            Log.i(TAG, "Finished parsing the message")
-
-            return Message(url, absolutePos, relativePos, isPlaying)
-        }
+        return null
     }
 }
