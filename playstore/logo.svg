@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="719.16907"
+   height="179.22"
+   viewBox="0 0 719.16907 179.22"
+   version="1.1"
+   id="svg18"
+   sodipodi:docname="logo.svg"
+   style="fill:none"
+   inkscape:export-filename="/home/mario/Programming/vidify.org-source/static/images/logo.png"
+   inkscape:export-xdpi="56.19413"
+   inkscape:export-ydpi="56.19413"
+   inkscape:version="0.92.4 5da689c313, 2019-01-14">
+  <metadata
+     id="metadata24">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs22" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1047"
+     id="namedview20"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.2435102"
+     inkscape:cx="-888.78242"
+     inkscape:cy="-181.80697"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg18" />
+  <path
+     d="M 250.727,28.0427 C 247.775,17.0786 239.129,8.43389 228.164,5.48203 208.131,0 127.999,0 127.999,0 127.999,0 47.868,0 27.8351,5.27118 17.0807,8.22304 8.22402,17.0786 5.27181,28.0427 0,48.0732 0,89.6101 0,89.6101 c 0,0 0,41.7479 5.27181,61.5669 2.95221,10.965 11.59799,19.609 22.56329,22.561 20.2438,5.482 100.1639,5.482 100.1639,5.482 0,0 80.132,0 100.165,-5.271 10.965,-2.952 19.611,-11.597 22.563,-22.561 5.272,-20.03 5.272,-61.5671 5.272,-61.5671 0,0 0.211,-41.7477 -5.272,-61.7782 z"
+     id="path10"
+     inkscape:connector-curvature="0"
+     style="fill:#ff0000" />
+  <path
+     d="m 161.665,128.173 c 2.503,1.525 5.779,0.737 7.305,-1.747 1.536,-2.485 0.743,-5.727 -1.76,-7.252 -22.457,-13.624 -50.296,-16.794 -82.7495,-9.433 -2.8649,0.646 -4.6484,3.474 -3.9942,6.312 0.6511,2.839 3.4997,4.616 6.3575,3.97 29.6562,-6.727 54.8382,-3.98 74.8412,8.15 z"
+     id="path12"
+     inkscape:connector-curvature="0"
+     style="fill:#ffffff" />
+  <path
+     d="m 170.262,105.57 c 3.123,1.909 7.213,0.929 9.136,-2.174 1.923,-3.096 0.936,-7.1553 -2.187,-9.0641 -26.299,-16.0436 -64.765,-20.5582 -95.706,-11.2381 -3.5068,1.0605 -5.4876,4.7368 -4.4296,8.2243 1.0662,3.4814 4.7766,5.4468 8.2895,4.3934 27.0871,-8.1627 61.9961,-4.1157 84.8971,9.8585 z"
+     id="path14"
+     inkscape:connector-curvature="0"
+     style="fill:#ffffff" />
+  <path
+     d="m 81.3148,69.6349 c 26.2162,-7.8991 71.5202,-6.4104 98.9782,9.7806 h 0.004 c 3.775,2.232 8.679,0.9928 10.917,-2.7663 2.248,-3.7541 1.007,-8.6091 -2.788,-10.8402 C 156.813,47.178 106.784,45.4257 76.6888,54.4953 c -4.2129,1.2705 -6.5874,5.6872 -5.3117,9.8685 1.2758,4.1793 5.7278,6.5386 9.9377,5.2711 z"
+     id="path16"
+     inkscape:connector-curvature="0"
+     style="fill:#ffffff" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;"
+     x="287.31079"
+     y="138.14062"
+     id="text28"><tspan
+       sodipodi:role="line"
+       id="tspan26"
+       x="287.31079"
+       y="138.14062"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:146.66667175px;font-family:Inter;-inkscape-font-specification:'Inter Semi-Bold';fill:#ffffff;letter-spacing:-3.22px;">Vidify</tspan></text>
+</svg>
