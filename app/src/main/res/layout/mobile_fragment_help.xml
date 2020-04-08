@@ -28,15 +28,15 @@
             android:textStyle="italic" />
 
         <ImageView
-            android:id="@+id/github_qrcode"
+            android:id="@+id/website_qrcode"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_margin="20dp"
             android:layout_gravity="center"
-            android:src="@drawable/qrcode_github"
-            android:clickable="true"
+            android:src="@drawable/qrcode_website"
             android:autoLink="web"
             android:contentDescription="QR code"
+            android:clickable="true"
             android:focusable="true" />
 
     </LinearLayout>
