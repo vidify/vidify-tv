@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import com.glowapps.vidify.R
 import com.glowapps.vidify.billing.BillingSystem
 import com.glowapps.vidify.model.Message
@@ -15,6 +16,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import org.w3c.dom.Text
 
 
 class VideoPlayerActivity : BaseTVActivity() {
@@ -39,8 +41,8 @@ class VideoPlayerActivity : BaseTVActivity() {
         device = intent.getParcelableExtra(DEVICE_ARG)!!
 
         // The button has to be modified before its layout is inflated for the player
-        toggleDemoMessage()
         initPlayer()
+        initBillingSystem()
         startConnectionThread()
     }
 
@@ -91,15 +93,22 @@ class VideoPlayerActivity : BaseTVActivity() {
         })
         youTubePlayerView.enterFullScreen()
         muteVideo(true)
+        enableWatermark()
     }
 
-    private fun toggleDemoMessage() {
+    private fun initBillingSystem() {
         billingSystem = BillingSystem(this)
-        // If the full app is purchased the demo message will be removed
-        if (billingSystem.isActive(Purchasable.SUBSCRIBE)) {
-            val msg: TextView = findViewById(R.id.demo_message)
-            msg.visibility = View.INVISIBLE
-        }
+        billingSystem.purchasesList.observe(this, Observer {
+            it?.let {
+                for (purchase in it) {
+                    // If the full app is purchased the demo message will be removed
+                    if (purchase.sku == Purchasable.SUBSCRIBE.sku) {
+                        disableWatermark()
+                    }
+                }
+            }
+        })
+        billingSystem.init()
     }
 
     // Start playing a new video from the message's url, and with its attributes
@@ -180,5 +189,15 @@ class VideoPlayerActivity : BaseTVActivity() {
         }
 
         return null
+    }
+
+    private fun enableWatermark() {
+        val msg: TextView = findViewById(R.id.demo_message)
+        msg.visibility = View.VISIBLE
+    }
+
+    private fun disableWatermark() {
+        val msg: TextView = findViewById(R.id.demo_message)
+        msg.visibility = View.INVISIBLE
     }
 }

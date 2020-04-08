@@ -3,116 +3,148 @@ package com.glowapps.vidify.billing
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.glowapps.vidify.model.Purchasable
 
 data class PurchasableData(
-    val type: Purchasable,
-    val product_id: String,
+    val id: Purchasable,
     var skuDetails: SkuDetails?
 )
 
-val purchasables = listOf(
-    PurchasableData(
-        Purchasable.SUBSCRIBE,
-        "full_app",
-        null
-    )
-)
+// Abstraction class used to prompt and query subscriptions
+class BillingSystem(private val context: Context) : PurchasesUpdatedListener,
+        BillingClientStateListener {
 
-// Abstraction class used to prompt and query purchasable items
-class BillingSystem(private val context: Context) : PurchasesUpdatedListener {
     companion object {
         private const val TAG = "BillingSystem"
     }
 
+    // Purchases are observable. This list will be updated when the Billing Library
+    // detects new or existing purchases. All observers will be notified.
+    val purchasesList = MutableLiveData<List<Purchase>>()
+
+    // SkuDetails for all known SKUs.
+    val skusWithSkuDetails = MutableLiveData<Map<String, SkuDetails>>()
+
     private lateinit var billingClient: BillingClient
 
-    init {
-        initClient()
+    fun init() {
+        billingClient = BillingClient.newBuilder(context)
+            .setListener(this)
+            .enablePendingPurchases()
+            .build()
+
+        if (!billingClient.isReady) {
+            billingClient.startConnection(this)
+        }
     }
 
-    private fun initClient() {
-        billingClient = BillingClient.newBuilder(context)
-            .enablePendingPurchases()
-            .setListener(this)
-            .build()
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    // The BillingClient is ready.
-                    Log.i(TAG, "Billing connection successful")
-                    loadSKUs()
-                } else {
-                    Log.e(TAG, "Billing connection unsuccessful: ${billingResult.responseCode}")
-                }
-            }
+    // The BillingClient can only be once, so this'll have to create a new instance when
+    // starting again.
+    fun destroy() {
+        if (billingClient.isReady) {
+            Log.i(TAG, "Ending connection with billing client")
+            billingClient.endConnection()
+        }
+    }
 
-            override fun onBillingServiceDisconnected() {
-                // Try to restart the connection on the next request to Google Play by calling
-                // the startConnection() method.
-                Log.e(TAG, "Billing connection closed")
-            }
-        })
+    override fun onBillingSetupFinished(billingResult: BillingResult) {
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            // The BillingClient is ready.
+            Log.i(TAG, "Billing connection successful")
+            loadSKUs()
+            queryPurchases()
+        } else {
+            Log.e(TAG, "Billing connection unsuccessful: ${billingResult.responseCode},"
+                    + billingResult.debugMessage)
+        }
+    }
+
+    override fun onBillingServiceDisconnected() {
+        // Try to restart the connection on the next request to Google Play by calling
+        // the startConnection() method.
+        Log.e(TAG, "Billing connection closed")
     }
 
     private fun loadSKUs() {
         if (!billingClient.isReady) {
-            Log.e(TAG, "Billing client not ready")
+            Log.e(TAG, "loadSKUs: Billing client not ready")
             return
         }
 
         // Getting a list with the purchasable IDs and initializing all of them
         val skuList = mutableListOf<String>()
-        for (p in purchasables) {
-            skuList.add(p.product_id)
+        for (p in Purchasable.values()) {
+            skuList.add(p.sku)
         }
 
         val params = SkuDetailsParams
             .newBuilder()
             .setSkusList(skuList)
-            .setType(BillingClient.SkuType.INAPP)
+            .setType(BillingClient.SkuType.SUBS)
             .build()
 
         billingClient.querySkuDetailsAsync(params) { billingResult, skuDetailsList ->
-            // Process the result.
+            if (billingResult == null) {
+                Log.wtf(TAG, "loadSKUs: Null BillingResult")
+                return@querySkuDetailsAsync
+            }
+
             if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-                Log.e(TAG, "Billing result unsuccessful:" +
+                Log.e(TAG, "loadSKUs: Billing result unsuccessful:" +
                         " ${billingResult.responseCode} ${billingResult.debugMessage}")
                 return@querySkuDetailsAsync
             }
 
-            if (skuDetailsList.isEmpty()) {
-                Log.e(TAG, "skuDetailsList is empty")
+            if (skuDetailsList == null || skuDetailsList.isEmpty()) {
+                Log.e(TAG, "loadSKUs: skuDetailsList is empty or null")
+                skusWithSkuDetails.postValue(emptyMap())
                 return@querySkuDetailsAsync
             }
 
             // Adding the SkuDetails structure to every element in the purchasables list so
             // that they can be used later.
-            for (skuDetails in skuDetailsList) {
-                for (p in purchasables) {
-                    if (skuDetails.sku == p.product_id) {
-                        Log.i(TAG, "Initialized $p")
-                        p.skuDetails = skuDetails
-                    }
+            skusWithSkuDetails.postValue(HashMap<String, SkuDetails>().apply {
+                for (details in skuDetailsList) {
+                    put(details.sku, details)
                 }
+            }.also { postedValue ->
+                Log.i(TAG, "loadSKUs: SkuDetails query response successful, count ${postedValue.size}")
+            })
+        }
+    }
+
+    private fun queryPurchases() {
+        if (!billingClient.isReady) {
+            Log.e(TAG, "queryPurchases: Billing client not ready")
+            return
+        }
+
+        val result: Purchase.PurchasesResult? =
+            billingClient.queryPurchases(BillingClient.SkuType.SUBS)
+
+        if (result == null) {
+            Log.e(TAG, "queryPurchases: Null result")
+        } else {
+            if (result.purchasesList == null) {
+                Log.e(TAG, "queryPurchases: Null purchases list")
+            } else {
+                Log.i(TAG, "queryPurchases: Query successful, updating"
+                    + "${result.purchasesList.size}")
+                purchasesList.postValue(result.purchasesList)
             }
         }
     }
 
-    // Checks if an item is active (as in, it was purchased).
-    fun isActive(purchasable: Purchasable): Boolean {
-        val data: PurchasableData? = purchasables.find{ p -> p.type == purchasable }
-        val purchasesResult: Purchase.PurchasesResult =
-            billingClient.queryPurchases(BillingClient.SkuType.INAPP)
-
-        Log.i(TAG, "${purchasesResult.purchasesList}")
-        return false
-    }
-
     // Attempting to prompt the user to purchase an item.
     fun promptPurchase(activity: Activity, purchasable: Purchasable) {
-        val data: PurchasableData? = purchasables.find{ p -> p.type == purchasable }
+        if (!billingClient.isReady) {
+            Log.e(TAG, "Billing client not ready for promptPurchase")
+            return
+        }
+
+        val data: SkuDetails? = skusWithSkuDetails.value?.get(purchasable.sku)
 
         // If the provided purchasable isn't found in the initialized list, nothing is done.
         if (data == null) {
@@ -120,37 +152,46 @@ class BillingSystem(private val context: Context) : PurchasesUpdatedListener {
             return
         }
 
-        // If the data is initialized, the user is prompted.
-        if (data.skuDetails == null) {
-            Log.e(TAG, "skuDetails for $purchasable is uninitialized")
-        } else {
-            val billingFlowParams = BillingFlowParams
-                .newBuilder()
-                .setSkuDetails(data.skuDetails)
-                .build()
-            billingClient.launchBillingFlow(activity, billingFlowParams)
-        }
+        Log.i(TAG, "Launching Billing flow activity")
+        val billingFlowParams = BillingFlowParams
+            .newBuilder()
+            .setSkuDetails(data)
+            .build()
+        billingClient.launchBillingFlow(activity, billingFlowParams)
     }
 
     override fun onPurchasesUpdated(
         billingResult: BillingResult?,
         purchases: MutableList<Purchase>?
     ) {
-        if (billingResult?.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-            for (purchase in purchases) {
-                acknowledgePurchase(purchase.purchaseToken)
+        if (billingResult == null) {
+            Log.wtf(TAG, "onPurchasesUpdated: null BillingResult")
+            return
+        }
+
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            if (purchases == null) {
+                Log.e(TAG, "onPurchasesUpdated: Null purchases")
+                purchasesList.postValue(null)
+            } else {
+                Log.i(TAG, "onPurchasesUpdated: Successful purchase update")
+                for (purchase in purchases) {
+                    Log.i(TAG, "onPurchasesUpdated: Update for ${purchase.sku} sent")
+                    acknowledgePurchase(purchase.purchaseToken)
+                }
+                purchasesList.postValue(purchases)
             }
-        } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+        } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
             // Handle an error caused by a user cancelling the purchase flow.
-            Log.e(TAG, "User cancelled purchase")
+            Log.e(TAG, "onPurchasesUpdated: User cancelled purchase")
         } else {
             // Handle any other error codes.
-            Log.e(TAG, "Unexpected ${billingResult?.responseCode}")
+            Log.e(TAG, "onPurchasesUpdated: Unexpected ${billingResult.responseCode}")
         }
     }
 
     private fun acknowledgePurchase(purchaseToken: String) {
-        Log.e(TAG, "Purchase acknowledged")
+        Log.i(TAG, "Purchase acknowledged")
 
         val params = AcknowledgePurchaseParams.newBuilder()
             .setPurchaseToken(purchaseToken)
@@ -158,7 +199,7 @@ class BillingSystem(private val context: Context) : PurchasesUpdatedListener {
         billingClient.acknowledgePurchase(params) { billingResult ->
             val responseCode = billingResult.responseCode
             val debugMessage = billingResult.debugMessage
-            Log.i(TAG, "Acknowledgement: $responseCode $debugMessage")
+            Log.i(TAG, "Acknowledgement response: $responseCode $debugMessage")
         }
     }
 }

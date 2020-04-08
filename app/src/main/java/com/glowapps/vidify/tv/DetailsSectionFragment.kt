@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.leanback.app.DetailsSupportFragment
 import androidx.leanback.app.DetailsSupportFragmentBackgroundController
 import androidx.leanback.widget.*
+import androidx.lifecycle.Observer
 import com.glowapps.vidify.billing.BillingSystem
 import com.glowapps.vidify.R
 import com.glowapps.vidify.model.DetailsSection
@@ -21,8 +22,9 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
         const val DATA_BUNDLE_ARG = "data_bundle_arg"
     }
 
-    private lateinit var data: DetailsSection
+    private var data: DetailsSection? = null
     private lateinit var rowsAdapter: ArrayObjectAdapter
+    private lateinit var buttonsAdapter: ArrayObjectAdapter
     private lateinit var backgroundController: DetailsSupportFragmentBackgroundController
 
     // Some buttons need a billing client for in-app purchases and similar.
@@ -30,7 +32,9 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate")
 
+        data = arguments?.getParcelable(DATA_BUNDLE_ARG)
         initAdapters()
         setupElements()
         initListeners()
@@ -61,13 +65,12 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
         }
 
         // Setting the elements given the DetailsSection data
-        if (arguments != null) {
-            data = arguments!!.getParcelable(DATA_BUNDLE_ARG)!!
-            Log.i(TAG, "Creating '${data.title}' section")
+        if (data != null) {
+            Log.i(TAG, "Creating '${data!!.title}' section")
 
-            val actionAdapter = ArrayObjectAdapter().apply {
-                if (data.actions != null) {
-                    for (action in data.actions!!) {
+            buttonsAdapter = ArrayObjectAdapter().apply {
+                if (data!!.actions != null) {
+                    for (action in data!!.actions!!) {
                         add(Action(action.type.id, action.text))
                     }
                 }
@@ -75,8 +78,8 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
 
             val detailsOverview = DetailsOverviewRow(data).apply {
                 // Add images and action buttons to the details view
-                imageDrawable = ContextCompat.getDrawable(activity!!, data.image)
-                actionsAdapter = actionAdapter
+                imageDrawable = ContextCompat.getDrawable(activity!!, data!!.image)
+                actionsAdapter = buttonsAdapter
             }
             rowsAdapter.add(detailsOverview)
         }
@@ -88,6 +91,18 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
 
     private fun initBillingSystem() {
         billingSystem = BillingSystem(context!!)
+        billingSystem.purchasesList.observe(this, Observer {
+            it?.let {
+                for (purchase in it) {
+                    // If the full app is purchased the demo message will be removed
+                    if (purchase.sku == Purchasable.SUBSCRIBE.sku) {
+                        Log.i(TAG, "Disabling subscription button")
+                        disableSubscribeButton()
+                    }
+                }
+            }
+        })
+        billingSystem.init()
     }
 
     override fun onItemClicked(
@@ -109,6 +124,26 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
             }
             else -> {
                 Log.e(TAG, "Unknown action ID: ${action.id}")
+            }
+        }
+    }
+
+    private fun enableSubscribeButton() {
+    }
+
+    private fun disableSubscribeButton() {
+        val btn = data?.actions?.find { action -> action.type == DetailsSectionButtonAction.SUBSCRIBE }
+        if (btn == null) {
+            Log.e(TAG, "Can't disable subscribe button, not found")
+            return
+        }
+
+        // Refreshing the buttons
+        btn.text = getString(R.string.section_subscribe_button_disabled)
+        buttonsAdapter.apply {
+            clear()
+            for (action in data!!.actions!!) {
+                add(Action(action.type.id, action.text))
             }
         }
     }
