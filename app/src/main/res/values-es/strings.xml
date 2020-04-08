@@ -17,5 +17,5 @@
     <string name="section_subscribe_button_disabled">Ya estás subscrito</string>
     <string name="section_share_title">Compartir</string>
     <string name="section_share_subtitle">Usa este código QR para compartir Vidify TV</string>
-    <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo al proyecto en GitHub en http://github.com/vidify/vidify</string>
+    <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo a la página oficial en https://vidify.org</string>
 </resources>

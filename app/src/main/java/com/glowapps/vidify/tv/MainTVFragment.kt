@@ -88,7 +88,7 @@ class MainTVFragment : BrowseSupportFragment() {
                 getString(R.string.section_help_subtitle),
                 getString(R.string.section_help_description),
                 R.drawable.icon_help,
-                R.drawable.qrcode_github,
+                R.drawable.qrcode_website,
                 null
             )
         )
