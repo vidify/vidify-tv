@@ -1,4 +1,4 @@
-package com.glowapps.vidify.model
+package com.glowapps.vidify.tv.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
@@ -16,7 +16,8 @@ enum class DetailsSectionCard {
 // The type of buttons that can be used in DetailsSection (this can be expanded).
 enum class DetailsSectionButtonAction(val id: Long) {
     SUBSCRIBE(0),
-    SHARE(1)
+    SUBSCRIBE_DONE(1),
+    SHARE(2)
 }
 
 // A parcelable alternative to Action with information about the button inside a DetailsSection

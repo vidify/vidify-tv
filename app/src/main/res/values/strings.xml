@@ -15,7 +15,7 @@
     <string name="section_help_button_visit">Visit</string>
     <string name="section_help_press_to_open">Press the image to redirect</string>
     <string name="section_subscribe_title">Obtain full app</string>
-    <string name="section_subscribe_subtitle">Subscribe to obtain full access to the app</string>
+    <string name="section_subscribe_subtitle">Subscribe to obtain full access</string>
     <string name="section_subscribe_description">To make it possible to continue Vidify\'s development, please subscribe. This will remove the demo version messages and will give you access to future extra features.</string>
     <string name="section_subscribe_button">Get the full app</string>
     <string name="section_subscribe_button_disabled">You\'re already subscribed</string>

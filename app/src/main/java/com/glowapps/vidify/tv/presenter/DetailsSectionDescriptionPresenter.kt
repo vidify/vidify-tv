@@ -1,6 +1,6 @@
 package com.glowapps.vidify.tv.presenter
 
-import com.glowapps.vidify.model.DetailsSection
+import com.glowapps.vidify.tv.model.DetailsSection
 
 class DetailsSectionDescriptionPresenter : AbstractDetailsDescriptionPresenterNoEllipsis() {
     override fun onBindDescription(viewHolder: ViewHolder, item: Any) {

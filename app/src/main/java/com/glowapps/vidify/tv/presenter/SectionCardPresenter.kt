@@ -11,7 +11,7 @@ import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.glowapps.vidify.R
-import com.glowapps.vidify.model.DetailsSection
+import com.glowapps.vidify.tv.model.DetailsSection
 
 // Custom card presenter with a ripple effect, rather than the conventional style.
 class SectionCardPresenter : Presenter() {

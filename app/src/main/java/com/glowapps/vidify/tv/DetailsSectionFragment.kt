@@ -3,6 +3,7 @@ package com.glowapps.vidify.tv
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.DetailsSupportFragment
 import androidx.leanback.app.DetailsSupportFragmentBackgroundController
@@ -10,8 +11,8 @@ import androidx.leanback.widget.*
 import androidx.lifecycle.Observer
 import com.glowapps.vidify.billing.BillingSystem
 import com.glowapps.vidify.R
-import com.glowapps.vidify.model.DetailsSection
-import com.glowapps.vidify.model.DetailsSectionButtonAction
+import com.glowapps.vidify.tv.model.DetailsSection
+import com.glowapps.vidify.tv.model.DetailsSectionButtonAction
 import com.glowapps.vidify.model.Purchasable
 import com.glowapps.vidify.tv.presenter.DetailsSectionDescriptionPresenter
 import com.glowapps.vidify.util.share
@@ -110,12 +111,16 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
         rowViewHolder: RowPresenter.ViewHolder?, row: Row?
     ) {
         val action = item as Action
-        Log.i(TAG, "Item clicked: $action")
+        Log.i(TAG, "Item clicked: '$action'")
 
         // First checking the purchasable items
         when (action.id) {
             DetailsSectionButtonAction.SUBSCRIBE.id -> {
                 billingSystem.promptPurchase(activity!!, Purchasable.SUBSCRIBE)
+            }
+            DetailsSectionButtonAction.SUBSCRIBE_DONE.id -> {
+                Toast.makeText(activity!!, getString(R.string.section_subscribe_button_disabled),
+                    Toast.LENGTH_LONG).show()
             }
             DetailsSectionButtonAction.SHARE.id -> {
                 // Sharing on a television will open an activity with a QR code and more
@@ -128,17 +133,17 @@ class DetailsSectionFragment : DetailsSupportFragment(), OnItemViewClickedListen
         }
     }
 
-    private fun enableSubscribeButton() {
-    }
-
     private fun disableSubscribeButton() {
-        val btn = data?.actions?.find { action -> action.type == DetailsSectionButtonAction.SUBSCRIBE }
+        val btn = data?.actions?.find {
+            action -> action.type == DetailsSectionButtonAction.SUBSCRIBE
+        }
         if (btn == null) {
             Log.e(TAG, "Can't disable subscribe button, not found")
             return
         }
 
         // Refreshing the buttons
+        btn.type = DetailsSectionButtonAction.SUBSCRIBE_DONE
         btn.text = getString(R.string.section_subscribe_button_disabled)
         buttonsAdapter.apply {
             clear()

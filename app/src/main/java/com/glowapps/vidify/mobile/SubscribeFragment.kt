@@ -79,7 +79,4 @@ class SubscribeFragment : Fragment() {
         )
         button.isEnabled = false
     }
-
-    private fun purchaseUpdate(p: String, isActive: Boolean) {
-    }
 }

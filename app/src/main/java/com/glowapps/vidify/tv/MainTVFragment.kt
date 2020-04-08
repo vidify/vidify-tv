@@ -1,7 +1,6 @@
 package com.glowapps.vidify.tv
 
 import android.content.Intent
-import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
 import android.os.Handler
@@ -12,10 +11,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import com.glowapps.vidify.R
-import com.glowapps.vidify.model.DetailsSection
-import com.glowapps.vidify.model.DetailsSectionButton
-import com.glowapps.vidify.model.DetailsSectionButtonAction
-import com.glowapps.vidify.model.DetailsSectionCard
+import com.glowapps.vidify.tv.model.DetailsSection
+import com.glowapps.vidify.tv.model.DetailsSectionButton
+import com.glowapps.vidify.tv.model.DetailsSectionButtonAction
+import com.glowapps.vidify.tv.model.DetailsSectionCard
 import com.glowapps.vidify.nsd.DeviceDiscoverySystem
 import com.glowapps.vidify.player.VideoPlayerActivity
 import com.glowapps.vidify.tv.presenter.SectionCardPresenter

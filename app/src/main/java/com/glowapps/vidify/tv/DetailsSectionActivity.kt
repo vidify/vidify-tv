@@ -3,7 +3,7 @@ package com.glowapps.vidify.tv
 import android.os.Bundle
 import android.util.Log
 import com.glowapps.vidify.R
-import com.glowapps.vidify.model.DetailsSection
+import com.glowapps.vidify.tv.model.DetailsSection
 
 class DetailsSectionActivity : BaseTVActivity() {
     companion object {
