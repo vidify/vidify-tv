@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Vidify TV</string>
     <string name="playstore_link" translatable="false">https://play.google.com/store/apps/details?id=com.glowapps.vidify</string>
-    <string name="website_link" translatable="false">https://vidify.org</string>
+    <string name="website_link">https://vidify.org</string>
     <string name="github_link" translatable="false">https://github.com/vidify/vidify</string>
     <string name="twitter_link" translatable="false">https://twitter.com/GlowAppsMobile</string>
     <string name="email" translatable="false">glowappshelp@gmail.com</string>
@@ -22,4 +22,5 @@
     <string name="section_share_title">Share</string>
     <string name="section_share_subtitle">Use this QR code to share the app</string>
     <string name="section_share_description">You can also visit the Play Store page at http://bit.ly/vidifyapp, and check out the official site at https://vidify.org.</string>
+    <string name="section_share_action_text">Let me recommend you Vidify! Learn more at https://vidify.org.</string>
 </resources>

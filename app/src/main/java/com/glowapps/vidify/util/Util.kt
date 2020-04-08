@@ -1,11 +1,9 @@
 package com.glowapps.vidify.util
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import com.glowapps.vidify.R
 
@@ -18,7 +16,7 @@ fun share(activity: Activity) {
         )
         putExtra(
             Intent.EXTRA_TEXT,
-            activity.getString(R.string.playstore_link)
+            activity.getString(R.string.section_share_action_text)
         )
         type = "text/plain"
     }

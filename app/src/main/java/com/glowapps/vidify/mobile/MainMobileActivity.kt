@@ -49,6 +49,7 @@ class MainMobileActivity : AppCompatActivity() {
         Log.i(TAG, "$item clicked")
         when (item.itemId) {
             R.id.share_button -> share(this)
+            R.id.playstore_button -> openURL(this, getString(R.string.playstore_link))
             R.id.twitter_button -> openURL(this, getString(R.string.twitter_link))
             else -> Log.e(TAG, "Unknown options item selected: ${item.itemId}")
         }

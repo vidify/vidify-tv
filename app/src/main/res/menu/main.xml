@@ -10,6 +10,13 @@
         android:icon="@drawable/icon_twitter_small" />
 
     <item
+        android:id="@+id/playstore_button"
+        android:title=""
+        android:contentDescription="Play Store"
+        app:showAsAction="always"
+        android:icon="@drawable/icon_favorite_small" />
+
+    <item
         android:id="@+id/share_button"
         android:title=""
         android:contentDescription="@string/section_share_title"
