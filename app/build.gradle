@@ -43,7 +43,7 @@ dependencies {
 
     // Google
     implementation 'com.android.billingclient:billing:2.2.0'
-    implementation 'com.android.billingclient:billing-ktx:2.1.0'
+    implementation 'com.android.billingclient:billing-ktx:3.0.1'
 
     // TV
     implementation 'androidx.leanback:leanback:1.0.0'
