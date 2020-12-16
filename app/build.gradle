@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdkVersion 29
@@ -12,6 +12,10 @@ android {
         targetSdkVersion 29
         versionCode 9
         versionName "0.4.1"
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     buildTypes {
@@ -38,7 +42,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Android
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference-ktx:1.1.1"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     // Google

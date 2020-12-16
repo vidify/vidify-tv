@@ -1,7 +1,7 @@
 package com.glowapps.vidify.tv.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 // This package defines the different data structures needed to both create a card in the main
 // fragment and start a DetailsSectionCardPresenter programmatically (only creating an Intent).

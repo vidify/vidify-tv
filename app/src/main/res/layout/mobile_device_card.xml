@@ -13,6 +13,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:background="@color/colorAccent"
+        android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -22,12 +23,11 @@
             android:layout_height="@dimen/card_image_height"
             android:src="@drawable/os_bsd"
             android:background="@color/card_background"
-            android:contentDescription="Card image"
+            android:contentDescription="@string/cards_background_image_description"
             android:layout_alignParentTop="true" />
 
         <TextView
             android:id="@+id/card_title"
-            android:text="Here's the test text TITLE"
             android:textStyle="bold"
             android:paddingLeft="@dimen/card_title_padding"
             android:paddingRight="@dimen/card_title_padding"
@@ -37,7 +37,6 @@
 
         <TextView
             android:id="@+id/card_description"
-            android:text="This is a test text message DESCRIPTION"
             android:paddingBottom="@dimen/card_description_padding"
             android:paddingLeft="@dimen/card_description_padding"
             android:paddingRight="@dimen/card_description_padding"

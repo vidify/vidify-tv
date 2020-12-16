@@ -86,11 +86,6 @@ class BillingSystem(private val context: Context) : PurchasesUpdatedListener,
             .build()
 
         billingClient.querySkuDetailsAsync(params) { billingResult, skuDetailsList ->
-            if (billingResult == null) {
-                Log.wtf(TAG, "loadSKUs: Null BillingResult")
-                return@querySkuDetailsAsync
-            }
-
             if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
                 Log.e(TAG, "loadSKUs: Billing result unsuccessful:" +
                         " ${billingResult.responseCode} ${billingResult.debugMessage}")
@@ -131,7 +126,7 @@ class BillingSystem(private val context: Context) : PurchasesUpdatedListener,
                 Log.e(TAG, "queryPurchases: Null purchases list")
             } else {
                 Log.i(TAG, "queryPurchases: Query successful, updating"
-                    + "${result.purchasesList.size}")
+                    + "${result.purchasesList?.size}")
                 purchasesList.postValue(result.purchasesList)
             }
         }
@@ -161,14 +156,9 @@ class BillingSystem(private val context: Context) : PurchasesUpdatedListener,
     }
 
     override fun onPurchasesUpdated(
-        billingResult: BillingResult?,
+        billingResult: BillingResult,
         purchases: MutableList<Purchase>?
     ) {
-        if (billingResult == null) {
-            Log.wtf(TAG, "onPurchasesUpdated: null BillingResult")
-            return
-        }
-
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             if (purchases == null) {
                 Log.e(TAG, "onPurchasesUpdated: Null purchases")

@@ -20,4 +20,5 @@
     <string name="section_share_subtitle">Usa este código QR para compartir Vidify TV</string>
     <string name="section_share_description">También puedes visitar la página de Play Store en http://bit.ly/vidifyapp, y échale un ojo a la página oficial en https://vidify.org</string>
     <string name="section_share_action_text">Permita que te recomienda Vidify! Aprende más en https://vidify.org/es.</string>
+    <string name="cards_background_image_description">Imagen de fondo</string>
 </resources>
